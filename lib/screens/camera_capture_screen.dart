@@ -154,6 +154,13 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
       final file = File(filePath);
       await file.writeAsBytes(composedBytes);
 
+      if (!await Gal.hasAccess()) {
+        final granted = await Gal.requestAccess();
+        if (!granted) {
+          throw Exception('Storage permission denied');
+        }
+      }
+
       // Save to gallery
       await Gal.putImage(filePath);
 
@@ -309,16 +316,30 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
         children: [
           // Camera Preview — FIXED: proper aspect ratio handling
           if (_isInitialized && _cameraController != null)
-            ClipRect(
-              child: OverflowBox(
-                alignment: Alignment.center,
-                maxWidth: double.infinity,
-                maxHeight: double.infinity,
-                child: AspectRatio(
-                  aspectRatio: _cameraController!.value.aspectRatio,
-                  child: CameraPreview(_cameraController!),
-                ),
-              ),
+            Builder(
+              builder: (context) {
+                final isPortrait = MediaQuery.of(context).orientation ==
+                    Orientation.portrait;
+                final double cameraRatio =
+                    _cameraController!.value.aspectRatio;
+                
+                // Camera plugin often returns landscape ratio (e.g. 1.77) even in portrait.
+                // We ensure the ratio correctly matches the current device orientation.
+                final double ratio = isPortrait
+                    ? (cameraRatio > 1 ? (1 / cameraRatio) : cameraRatio)
+                    : (cameraRatio < 1 ? (1 / cameraRatio) : cameraRatio);
+
+                return SizedBox.expand(
+                  child: FittedBox(
+                    fit: BoxFit.cover,
+                    child: SizedBox(
+                      width: 1000,
+                      height: 1000 / ratio,
+                      child: CameraPreview(_cameraController!),
+                    ),
+                  ),
+                );
+              },
             )
           else
             Center(
@@ -371,7 +392,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
           // Telemetry HUD Overlay
           Positioned(
             left: 12,
-            bottom: 110,
+            bottom: 110 + MediaQuery.of(context).padding.bottom,
             child: RepaintBoundary(
               key: _repaintKey,
               child: _buildHUD(displayMap, storage),
@@ -380,7 +401,7 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
 
           // Capture Button
           Positioned(
-            bottom: 24,
+            bottom: 24 + MediaQuery.of(context).padding.bottom,
             left: 0,
             right: 0,
             child: Center(

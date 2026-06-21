@@ -87,6 +87,13 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen>
       final file = File(filePath);
       await file.writeAsBytes(composedBytes);
 
+      if (!await Gal.hasAccess()) {
+        final granted = await Gal.requestAccess();
+        if (!granted) {
+          throw Exception('Storage permission denied');
+        }
+      }
+
       await Gal.putImage(filePath);
 
       if (mounted) {

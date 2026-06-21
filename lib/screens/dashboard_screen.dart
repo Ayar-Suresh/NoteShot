@@ -424,7 +424,7 @@ class _DashboardScreenState extends State<DashboardScreen>
       child: Row(
         children: [
           SizedBox(
-            width: 50,
+            width: 80,
             child: Text(
               label,
               style: TextStyle(
@@ -560,11 +560,11 @@ class _DashboardScreenState extends State<DashboardScreen>
     return GridView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
+      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: 200,
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
-        childAspectRatio: 1.65,
+        mainAxisExtent: 110,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -697,14 +697,23 @@ class _NavCardState extends State<_NavCard>
                 ),
                 child: Icon(item.icon, color: Colors.white, size: 16),
               ),
-              Text(
-                item.label,
-                style: const TextStyle(
-                  color: Color(0xFFE0E6ED),
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                  letterSpacing: 0.3,
+              Expanded(
+                child: Align(
+                  alignment: Alignment.bottomLeft,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      item.label,
+                      style: const TextStyle(
+                        color: Color(0xFFE0E6ED),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w600,
+                        height: 1.3,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ],

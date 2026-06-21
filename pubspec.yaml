@@ -1,0 +1,42 @@
+name: noteshot
+description: "GPS Stamper & Overlay - Network Engineering Utility"
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '^3.2.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+  
+  # Core Infrastructure
+  geolocator: ^10.1.0
+  shared_preferences: ^2.2.2
+  permission_handler: ^11.1.0
+  
+  # Workflow 1: System-wide background overlay
+  flutter_overlay_window: ^0.4.1
+  
+  # Workflow 2: Camera & Stamping
+  camera: ^0.10.5+5
+  path_provider: ^2.1.1
+  image_picker: ^1.0.4
+  image: ^4.1.3
+  
+  # Specialized Utilities
+  webview_flutter: ^4.4.2
+  gal: ^2.3.2
+  http: ^1.6.0
+  html: ^0.15.6
+  dart_ping: ^9.0.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true

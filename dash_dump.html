@@ -1,0 +1,539 @@
+<!DOCTYPE html><html lang="en" theme="blue-theme">	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="Author" content="Zabbix SIA" /><title>Dashboard</title>		<link rel="icon" href="favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="76x76" href="assets/img/apple-touch-icon-76x76-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="assets/img/apple-touch-icon-120x120-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/img/apple-touch-icon-152x152-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="180x180" href="assets/img/apple-touch-icon-180x180-precomposed.png">
+		<link rel="icon" sizes="192x192" href="assets/img/touch-icon-192x192.png">
+		<meta name="msapplication-TileImage" content="assets/img/ms-tile-144x144.png">
+		<meta name="msapplication-TileColor" content="#d40000">
+		<meta name="msapplication-config" content="none"/><link rel="stylesheet" type="text/css" href="assets/styles/blue-theme.css?1692691831"><link rel="stylesheet" type="text/css" href="assets/styles/vendors/Leaflet/Leaflet/leaflet.css?1692691822"><style>:root {
+--severity-color-na-bg: #97AAB3;
+--severity-color-info-bg: #7499FF;
+--severity-color-warning-bg: #FFC859;
+--severity-color-average-bg: #FFA059;
+--severity-color-high-bg: #E97659;
+--severity-color-disaster-bg: #E45959;
+}
+.na-bg, .na-bg input[type="radio"]:checked + label, .na-bg:before, .flh-na-bg, .status-na-bg, .status-na-bg:before { background-color: #97AAB3 }
+.info-bg, .info-bg input[type="radio"]:checked + label, .info-bg:before, .flh-info-bg, .status-info-bg, .status-info-bg:before { background-color: #7499FF }
+.warning-bg, .warning-bg input[type="radio"]:checked + label, .warning-bg:before, .flh-warning-bg, .status-warning-bg, .status-warning-bg:before { background-color: #FFC859 }
+.average-bg, .average-bg input[type="radio"]:checked + label, .average-bg:before, .flh-average-bg, .status-average-bg, .status-average-bg:before { background-color: #FFA059 }
+.high-bg, .high-bg input[type="radio"]:checked + label, .high-bg:before, .flh-high-bg, .status-high-bg, .status-high-bg:before { background-color: #E97659 }
+.disaster-bg, .disaster-bg input[type="radio"]:checked + label, .disaster-bg:before, .flh-disaster-bg, .status-disaster-bg, .status-disaster-bg:before { background-color: #E45959 }
+
+</style><script>
+		const PHP_TZ_OFFSETS = [19800];
+		const PHP_ZBX_FULL_DATE_TIME = "Y-m-d H:i:s";
+	
+if (locale === undefined) { var locale = {}; }
+locale['Actions'] = "Actions";
+locale['Set this view as default'] = "Set this view as default";
+locale['Reset to initial view'] = "Reset to initial view";
+locale['No problems'] = "No problems";
+locale['Not classified'] = "Not classified";
+locale['Information'] = "Information";
+locale['Warning'] = "Warning";
+locale['Average'] = "Average";
+locale['High'] = "High";
+locale['Disaster'] = "Disaster";
+locale['Host'] = "Host";
+locale['D'] = "D";
+locale['H'] = "H";
+locale['A'] = "A";
+locale['W'] = "W";
+locale['I'] = "I";
+locale['N'] = "N";
+locale['Navigate to default view'] = "Navigate to default view";
+locale['Navigate to initial view'] = "Navigate to initial view";
+locale['Actions'] = "Actions";
+locale['Download image'] = "Download image";
+locale['Add'] = "Add";
+locale['Add child element'] = "Add child elements";
+locale['Add multiple maps'] = "Add multiple maps";
+locale['Apply'] = "Apply";
+locale['Cancel'] = "Cancel";
+locale['Edit'] = "Edit";
+locale['Edit tree element'] = "Edit tree element";
+locale['Remove'] = "Remove";
+locale['Collapse'] = "Collapse";
+locale['Expand'] = "Expand";
+locale['Actions'] = "Actions";
+locale['Download image'] = "Download image";</script><script src="js/browsers.js?1692691822"></script><script src="jsLoader.php?lang=en_US&amp;ver=6.4.6&amp;showGuiMessaging=1"></script><script src="jsLoader.php?ver=6.4.6&amp;lang=en_US&amp;files%5B0%5D=flickerfreescreen.js&amp;files%5B1%5D=gtlc.js&amp;files%5B2%5D=leaflet.js&amp;files%5B3%5D=leaflet.markercluster.js&amp;files%5B4%5D=class.dashboard.js&amp;files%5B5%5D=class.dashboard.page.js&amp;files%5B6%5D=class.dashboard.widget.placeholder.js&amp;files%5B7%5D=class.geomaps.js&amp;files%5B8%5D=class.widget.js&amp;files%5B9%5D=class.widget.inaccessible.js&amp;files%5B10%5D=class.widget.iterator.js&amp;files%5B11%5D=class.widget.paste-placeholder.js&amp;files%5B12%5D=class.calendar.js&amp;files%5B13%5D=layout.mode.js&amp;files%5B14%5D=class.coverride.js&amp;files%5B15%5D=class.crangecontrol.js&amp;files%5B16%5D=colorpicker.js&amp;files%5B17%5D=class.csvggraph.js&amp;files%5B18%5D=class.cnavtree.js&amp;files%5B19%5D=class.svg.canvas.js&amp;files%5B20%5D=class.svg.map.js&amp;files%5B21%5D=class.tagfilteritem.js&amp;files%5B22%5D=class.sortable.js&amp;files%5B23%5D=servercheck.js"></script><script src="widgets/actionlog/assets/js/class.widget.js?1692691832"></script><script src="widgets/clock/assets/js/class.widget.js?1692691832"></script><script src="widgets/geomap/assets/js/class.widget.js?1692691832"></script><script src="widgets/graph/assets/js/class.widget.js?1692691832"></script><script src="widgets/graphprototype/assets/js/class.widget.js?1692691832"></script><script src="widgets/hostavail/assets/js/class.widget.js?1692691832"></script><script src="widgets/item/assets/js/class.widget.js?1692691832"></script><script src="widgets/map/assets/js/class.widget.js?1692691832"></script><script src="widgets/navtree/assets/js/class.widget.js?1692691832"></script><script src="widgets/problems/assets/js/class.widget.js?1692691832"></script><script src="widgets/problemsbysv/assets/js/class.widget.js?1692691832"></script><script src="widgets/svggraph/assets/js/class.widget.js?1692691832"></script><script src="widgets/trigover/assets/js/class.widget.js?1692691832"></script><script src="widgets/url/assets/js/class.widget.js?1692691832"></script></head>
+<body><aside class="sidebar is-compact"><div class="sidebar-header"><a class="logo" href="zabbix.php?action=dashboard.view"><div class="zabbix-sidebar-logo sidebar-logo"></div><div class="zabbix-sidebar-logo-compact sidebar-logo-compact"></div></a><div class="sidebar-header-buttons"><button type="button" class="button-compact js-sidebar-mode" title="Collapse sidebar">Collapse sidebar</button><button type="button" class="button-expand js-sidebar-mode" title="Expand sidebar">Expand sidebar</button><button type="button" class="button-hide js-sidebar-mode" title="Hide sidebar">Hide sidebar</button><button type="button" class="button-show js-sidebar-mode" title="Show sidebar">Show sidebar</button></div></div><form method="get" action="zabbix.php" accept-charset="utf-8" class="form-search" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" class="search" aria-label="type here to search" autocomplete="off"><button type="submit" class="search-icon" title="Search" disabled=""></button></form><div class="sidebar-nav scrollable" tabindex="-1"><nav class="nav-main" role="navigation" aria-label="Main navigation"><ul class="menu-main"><li id="dashboard" class="is-selected"><a class="icon-dashboards" href="zabbix.php?action=dashboard.view">Dashboards</a></li><li id="view" class="has-submenu"><a class="icon-monitoring" href="#">Monitoring</a><ul class="submenu"><li><a href="zabbix.php?action=problem.view">Problems</a></li><li><a href="zabbix.php?action=host.view">Hosts</a></li><li><a href="zabbix.php?action=latest.view">Latest data</a></li><li><a href="zabbix.php?action=map.view">Maps</a></li></ul></li><li id="cm" class="has-submenu"><a class="icon-inventory" href="#">Inventory</a><ul class="submenu"><li><a href="hostinventories.php">Hosts</a></li></ul></li><li id="reports" class="has-submenu"><a class="icon-reports" href="#">Reports</a><ul class="submenu"><li><a href="report2.php">Availability report</a></li><li><a href="toptriggers.php">Triggers top 100</a></li></ul></li></ul></nav><nav class="nav-user" role="navigation" aria-label="User menu"><ul class="menu-user"><li><a class="icon-support" title="Zabbix Technical Support" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/support">Support</a></li><li><a class="icon-integrations" title="Zabbix Integrations" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/integrations">Integrations</a></li><li><a class="icon-help" title="Help" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/documentation/6.4/">Help</a></li><li><a class="icon-profile" title="sipl-team (SIPL field team)" href="zabbix.php?action=userprofile.edit">User settings</a></li><li onclick="ZABBIX.logout(event)"><a class="icon-signout" title="Sign out" href="#signout">Sign out</a></li></ul></nav></div></aside><div class="wrapper">
+<script>
+	const view = {
+		is_busy: false,
+		is_busy_saving: false,
+
+		init({
+			dashboard,
+			widget_defaults,
+			widget_last_type,
+			configuration_hash,
+			has_time_selector,
+			time_period,
+			dynamic,
+			web_layout_mode,
+			clone
+		}) {
+			this.dashboard = dashboard;
+			this.has_time_selector = has_time_selector;
+			this.time_period = time_period;
+			this.dynamic = dynamic;
+			this.clone = clone;
+
+			timeControl.refreshPage = false;
+
+			ZABBIX.Dashboard = new CDashboard(document.querySelector('.dashboard'), {
+				containers: {
+					grid: document.querySelector('.dashboard-grid'),
+					navigation: document.querySelector('.dashboard-navigation'),
+					navigation_tabs: document.querySelector('.dashboard-navigation-tabs')
+				},
+				buttons: web_layout_mode == 1					? {
+						previous_page: document.querySelector('.btn-dashboard-kioskmode-previous-page'),
+						next_page: document.querySelector('.btn-dashboard-kioskmode-next-page'),
+						slideshow: document.querySelector('.btn-dashboard-kioskmode-toggle-slideshow')
+					}
+					: {
+						previous_page: document.querySelector('.dashboard-previous-page'),
+						next_page: document.querySelector('.dashboard-next-page'),
+						slideshow: document.querySelector('.dashboard-toggle-slideshow')
+					},
+				data: {
+					dashboardid: dashboard.dashboardid,
+					name: dashboard.name,
+					userid: dashboard.owner.id,
+					templateid: null,
+					display_period: dashboard.display_period,
+					auto_start: dashboard.auto_start
+				},
+				max_dashboard_pages: 50,
+				cell_width: 100 / 24,
+				cell_height: 70,
+				max_columns: 24,
+				max_rows: 64,
+				widget_min_rows: 2,
+				widget_max_rows: 32,
+				widget_defaults,
+				widget_last_type,
+				configuration_hash,
+				is_editable: dashboard.can_edit_dashboards && dashboard.editable
+					&& web_layout_mode != 1,
+				is_edit_mode: dashboard.dashboardid === null || clone,
+				can_edit_dashboards: dashboard.can_edit_dashboards,
+				is_kiosk_mode: web_layout_mode == 1,
+				time_period,
+				dynamic_hostid: dynamic.host ? dynamic.host.id : null,
+				csrf_token: "c2dc56f6f021119b121f59e172857b9eb97f4acd0a6f5c5caa4be14e29700d78"			});
+
+			for (const page of dashboard.pages) {
+				for (const widget of page.widgets) {
+					widget.fields = (typeof widget.fields === 'object') ? widget.fields : {};
+				}
+
+				ZABBIX.Dashboard.addDashboardPage(page);
+			}
+
+			ZABBIX.Dashboard.activate();
+
+			if (web_layout_mode != 1) {
+				ZABBIX.Dashboard.on(DASHBOARD_EVENT_EDIT, () => this.edit());
+				ZABBIX.Dashboard.on(DASHBOARD_EVENT_APPLY_PROPERTIES, this.events.applyProperties);
+
+				if (dynamic.has_dynamic_widgets) {
+					jQuery('#dynamic_hostid').on('change', this.events.dynamicHostChange);
+				}
+
+				if (dashboard.dashboardid === null || clone) {
+					this.edit();
+					ZABBIX.Dashboard.editProperties();
+				}
+				else {
+					document
+						.getElementById('dashboard-edit')
+						.addEventListener('click', () => {
+							ZABBIX.Dashboard.setEditMode();
+							this.edit();
+						});
+				}
+			}
+
+			ZABBIX.Dashboard.on(DASHBOARD_EVENT_CONFIGURATION_OUTDATED, this.events.configurationOutdated);
+
+			if (dynamic.has_dynamic_widgets) {
+				// Perform dynamic host switch when browser back/previous buttons are pressed.
+				window.addEventListener('popstate', this.events.popState);
+			}
+
+			jqBlink.blink();
+		},
+
+		edit() {
+			timeControl.disableAllSBox();
+
+			if (this.dynamic.has_dynamic_widgets) {
+				jQuery('#dynamic_hostid').off('change', this.events.dynamicHostChange);
+			}
+
+			document
+				.querySelectorAll('.filter-space')
+				.forEach((el) => {
+					el.style.display = 'none';
+				});
+
+			clearMessages();
+
+			document
+				.querySelectorAll('#dashboard-control > li')
+				.forEach((el) => {
+					el.style.display = (el.nextElementSibling === null) ? '' : 'none';
+				});
+
+			document
+				.getElementById('dashboard-config')
+				.addEventListener('click', () => ZABBIX.Dashboard.editProperties());
+
+			document
+				.getElementById('dashboard-add-widget')
+				.addEventListener('click', () => ZABBIX.Dashboard.addNewWidget());
+
+			document
+				.getElementById('dashboard-add')
+				.addEventListener('click', this.events.addClick);
+
+			document
+				.getElementById('dashboard-save')
+				.addEventListener('click', () => this.save());
+
+			document
+				.getElementById('dashboard-cancel')
+				.addEventListener('click', (e) => {
+					this.cancelEditing();
+					e.preventDefault();
+				}
+			);
+
+			ZABBIX.Dashboard.on(DASHBOARD_EVENT_BUSY, this.events.busy);
+			ZABBIX.Dashboard.on(DASHBOARD_EVENT_IDLE, this.events.idle);
+
+			this.enableNavigationWarning();
+		},
+
+		save() {
+			this.is_busy_saving = true;
+			this.updateBusy();
+
+			const request_data = ZABBIX.Dashboard.save();
+
+			request_data.sharing = this.dashboard.sharing;
+
+			if (this.clone) {
+				request_data.clone = '1';
+			}
+
+			const curl = new Curl('zabbix.php');
+
+			curl.setArgument('action', 'dashboard.update');
+			curl.setArgument('_csrf_token',
+				"c2dc56f6f021119b121f59e172857b9eb97f4acd0a6f5c5caa4be14e29700d78"			);
+
+			fetch(curl.getUrl(), {
+				method: 'POST',
+				headers: {'Content-Type': 'application/json'},
+				body: JSON.stringify(request_data)
+			})
+				.then((response) => response.json())
+				.then((response) => {
+					if ('error' in response) {
+						throw {error: response.error};
+					}
+
+					postMessageOk(response.success.title);
+
+					if ('messages' in response.success) {
+						postMessageDetails('success', response.success.messages);
+					}
+
+					this.disableNavigationWarning();
+
+					const curl = new Curl('zabbix.php');
+
+					curl.setArgument('action', 'dashboard.view');
+					curl.setArgument('dashboardid', response.dashboardid);
+
+					const dashboard_page_index = ZABBIX.Dashboard.getDashboardPageIndex(
+						ZABBIX.Dashboard.getSelectedDashboardPage()
+					);
+
+					if (dashboard_page_index > 0) {
+						curl.setArgument('page', dashboard_page_index + 1);
+					}
+
+					location.replace(curl.getUrl());
+				})
+				.catch((exception) => {
+					clearMessages();
+
+					let title;
+					let messages = [];
+
+					if (typeof exception === 'object' && 'error' in exception) {
+						title = exception.error.title;
+						messages = exception.error.messages;
+					}
+					else {
+						title = this.dashboard.dashboardid === null || this.clone
+							? "Failed to create dashboard"							: "Failed to update dashboard";
+					}
+
+					const message_box = makeMessageBox('bad', messages, title);
+
+					addMessage(message_box);
+				})
+				.finally(() => {
+					this.is_busy_saving = false;
+					this.updateBusy();
+				});
+		},
+
+		updateBusy() {
+			document.getElementById('dashboard-save').disabled = this.is_busy || this.is_busy_saving;
+		},
+
+		cancelEditing() {
+			this.disableNavigationWarning();
+
+			const curl = new Curl('zabbix.php');
+
+			curl.setArgument('action', 'dashboard.view');
+
+			if (this.dashboard.dashboardid !== null) {
+				curl.setArgument('dashboardid', this.dashboard.dashboardid);
+			}
+			else {
+				curl.setArgument('cancel', '1');
+			}
+
+			location.replace(curl.getUrl());
+		},
+
+		enableNavigationWarning() {
+			window.addEventListener('beforeunload', this.events.beforeUnload, {passive: false});
+		},
+
+		disableNavigationWarning() {
+			window.removeEventListener('beforeunload', this.events.beforeUnload);
+		},
+
+		editHost(hostid) {
+			const host_data = {hostid};
+
+			this.openHostPopup(host_data);
+		},
+
+		openHostPopup(host_data) {
+			const original_url = location.href;
+
+			const overlay = PopUp('popup.host.edit', host_data, {
+				dialogueid: 'host_edit',
+				dialogue_class: 'modal-popup-large',
+				prevent_navigation: true
+			});
+
+			overlay.$dialogue[0].addEventListener('dialogue.create', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('dialogue.update', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('dialogue.delete', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('overlay.close', () => {
+				history.replaceState({}, '', original_url);
+			}, {once: true});
+		},
+
+		events: {
+			addClick(e) {
+				const menu = [
+					{
+						items: [
+							{
+								label: "Add widget",
+								clickCallback: () => ZABBIX.Dashboard.addNewWidget()
+							},
+							{
+								label: "Add page",
+								clickCallback: () => ZABBIX.Dashboard.addNewDashboardPage()
+							}
+						]
+					},
+					{
+						items: [
+							{
+								label: "Paste widget",
+								clickCallback: () => ZABBIX.Dashboard.pasteWidget(
+									ZABBIX.Dashboard.getStoredWidgetDataCopy()
+								),
+								disabled: ZABBIX.Dashboard.getStoredWidgetDataCopy() === null
+							},
+							{
+								label: "Paste page",
+								clickCallback: () => ZABBIX.Dashboard.pasteDashboardPage(
+									ZABBIX.Dashboard.getStoredDashboardPageDataCopy()
+								),
+								disabled: ZABBIX.Dashboard.getStoredDashboardPageDataCopy() === null
+							}
+						]
+					}
+				];
+
+				jQuery(e.target).menuPopup(menu, new jQuery.Event(e), {
+					position: {
+						of: e.target,
+						my: 'left top',
+						at: 'left bottom',
+						within: '.wrapper'
+					}
+				});
+			},
+
+			beforeUnload(e) {
+				if (ZABBIX.Dashboard.isUnsaved()) {
+					// Display confirmation message.
+					e.preventDefault();
+					e.returnValue = '';
+				}
+			},
+
+			popState(e) {
+				const host = (e.state !== null && 'host' in e.state) ? e.state.host : null;
+
+				jQuery('#dynamic_hostid').multiSelect('addData', host ? [host] : [], false);
+
+				ZABBIX.Dashboard.setDynamicHost(host ? host.id : null);
+			},
+
+			dynamicHostChange() {
+				const hosts = jQuery('#dynamic_hostid').multiSelect('getData');
+				const host = hosts.length ? hosts[0] : null;
+				const curl = new Curl('zabbix.php');
+
+				curl.setArgument('action', 'dashboard.view');
+
+				if (view.dashboard.dashboardid !== null) {
+					curl.setArgument('dashboardid', view.dashboard.dashboardid);
+				}
+
+				if (view.has_time_selector) {
+					curl.setArgument('from', view.time_period.from);
+					curl.setArgument('to', view.time_period.to);
+				}
+
+				if (host !== null) {
+					curl.setArgument('hostid', host.id);
+				}
+
+				ZABBIX.Dashboard.setDynamicHost(host ? host.id : null);
+
+				history.pushState({host: host}, '', curl.getUrl());
+
+				updateUserProfile('web.dashboard.hostid', host ? host.id : 1);
+			},
+
+			applyProperties() {
+				const dashboard_data = ZABBIX.Dashboard.getData();
+
+				document.getElementById('page-title-general').textContent = dashboard_data.name;
+				document.getElementById('dashboard-direct-link').textContent = dashboard_data.name;
+			},
+
+			configurationOutdated() {
+				location.href = location.href;
+			},
+
+			busy() {
+				view.is_busy = true;
+				view.updateBusy();
+			},
+
+			idle() {
+				view.is_busy = false;
+				view.updateBusy();
+			},
+
+			hostSuccess(e) {
+				const data = e.detail;
+
+				if ('success' in data) {
+					postMessageOk(data.success.title);
+
+					if ('messages' in data.success) {
+						postMessageDetails('success', data.success.messages);
+					}
+				}
+
+				location.href = location.href;
+			}
+		}
+	}
+</script>
+<header class="header-title"><nav class="sidebar-nav-toggle" role="navigation" aria-label="Sidebar control"><button type="button" id="sidebar-button-toggle" class="button-toggle" title="Show sidebar">Show sidebar</button></nav><div><h1 id="page-title-general">Global view</h1></div><div class="header-doc-link"><a title="Help" target="_blank" rel="noopener noreferrer" class="icon-doc-link" href="https://www.zabbix.com/documentation/6.4/en/manual/web_interface/frontend_sections/dashboards"></a></div><div class="header-controls"><ul id="dashboard-control"><li><nav aria-label="Content controls"><ul><li><button type="button" id="dashboard-edit" name="dashboard-edit" disabled="disabled" aria-disabled="true">Edit dashboard</button></li><li><button type="button" class="btn-action" id="dashboard-actions" title="Actions" disabled="disabled" aria-haspopup="1" data-menu-popup="{&quot;type&quot;:&quot;dashboard&quot;,&quot;data&quot;:{&quot;dashboardid&quot;:&quot;1&quot;,&quot;editable&quot;:false,&quot;has_related_reports&quot;:true,&quot;can_edit_dashboards&quot;:false,&quot;can_view_reports&quot;:false,&quot;can_create_reports&quot;:false,&quot;csrf_token&quot;:&quot;c2dc56f6f021119b121f59e172857b9eb97f4acd0a6f5c5caa4be14e29700d78&quot;}}" aria-expanded="false">&nbsp;</button></li><li><button type="button" title="Kiosk mode" data-layout-mode="1" class="layout-mode btn-kiosk">&nbsp;</button></li></ul></nav></li><li style="display: none"><nav aria-label="Content controls" class="dashboard-edit"><ul><li><button type="button" id="dashboard-config" name="dashboard-config" class="btn-dashboard-conf"></button></li><li><ul class="btn-split"><li><button type="button" id="dashboard-add-widget" name="dashboard-add-widget" class="btn-alt"><span class="plus-icon"></span>Add</button></li><li><button type="button" id="dashboard-add" name="dashboard-add" class="btn-alt btn-toggle-chevron">&#8203;</button></li></ul></li><li><button type="button" id="dashboard-save" name="dashboard-save">Save changes</button></li><li><a id="dashboard-cancel" href="#">Cancel</a></li><li></li></ul></nav></li></ul></div></header><main><div class="header-navigation"><ul><li><ul class="breadcrumbs" role="navigation" aria-label="Hierarchy"><li><span><a href="zabbix.php?action=dashboard.list">All dashboards</a></span></li><li><span class="selected"><a id="dashboard-direct-link" href="zabbix.php?action=dashboard.view&amp;dashboardid=1">Global view</a></span></li></ul></li></ul></div><div class="dashboard"><div class="dashboard-navigation"><div class="dashboard-navigation-tabs"></div><div class="dashboard-navigation-controls"><button type="button" class="dashboard-previous-page btn-iterator-page-previous" disabled="disabled"></button><button type="button" class="dashboard-next-page btn-iterator-page-next" disabled="disabled"></button><button type="button" class="btn-alt dashboard-toggle-slideshow slideshow-state-started"><span class="slideshow-state-stopped">Start slideshow</span><span class="slideshow-state-started">Stop slideshow</span></button></div></div><div class="dashboard-grid"></div></div></main><script>jQuery(function($){
+	view.init({"dashboard":{"dashboardid":"1","name":"Global view","userid":"1","display_period":"30","auto_start":"1","pages":[{"dashboard_pageid":"1","name":"","display_period":"0","widgets":[{"widgetid":"7668","type":"problemhosts","name":"GFGNL Package- A Horizontal Connectivity 24 Hour Status","view_mode":"0","pos":{"x":0,"y":0,"width":22,"height":3},"rf_rate":60,"fields":{"groupids":["21","103"],"severities":"5"}},{"widgetid":"7667","type":"problemhosts","name":"GFGNL Package- A Horizontal Connectivity Live Status","view_mode":"0","pos":{"x":0,"y":3,"width":22,"height":2},"rf_rate":60,"fields":{"groupids":"21","severities":"4"}},{"widgetid":"7656","type":"problemhosts","name":"GFGNL Package- A Department wise Horizontal Connectivity Status","view_mode":"0","pos":{"x":0,"y":5,"width":22,"height":5},"rf_rate":60,"fields":{"groupids":["23","22","25","24","101","102","104"],"ext_ack":"2","severities":"5"}},{"widgetid":"7662","type":"problemhosts","name":"Education Department District wise Status","view_mode":"0","pos":{"x":0,"y":10,"width":10,"height":9},"rf_rate":60,"fields":{"groupids":["41","45","37","49","53","56","58","62","64","66","68","70","74","76","78","80"],"severities":"5"}},{"widgetid":"7663","type":"problemhosts","name":"Home Department District wise Status","view_mode":"0","pos":{"x":10,"y":10,"width":12,"height":9},"rf_rate":60,"fields":{"groupids":["42","46","38","50","54","57","59","61","63","65","67","69","71","73","75","77","79","81"],"severities":"5"}},{"widgetid":"7671","type":"geomap","name":"","view_mode":"0","pos":{"x":0,"y":19,"width":24,"height":5},"rf_rate":60,"fields":[]}]}],"editable":false,"owner":{"id":"1","name":"Inaccessible user"},"has_related_reports":true,"can_edit_dashboards":false,"can_view_reports":false,"can_create_reports":false},"widget_defaults":{"actionlog":{"name":"Action log","size":{"width":12,"height":5},"js_class":"CWidgetActionLog"},"clock":{"name":"Clock","size":{"width":4,"height":3},"js_class":"CWidgetClock"},"dataover":{"name":"Data overview","size":{"width":12,"height":5},"js_class":"CWidget"},"discovery":{"name":"Discovery status","size":{"width":6,"height":3},"js_class":"CWidget"},"favgraphs":{"name":"Favorite graphs","size":{"width":4,"height":3},"js_class":"CWidget"},"favmaps":{"name":"Favorite maps","size":{"width":4,"height":3},"js_class":"CWidget"},"geomap":{"name":"Geomap","size":{"width":12,"height":5},"js_class":"CWidgetGeoMap"},"graph":{"name":"Graph (classic)","size":{"width":12,"height":5},"js_class":"CWidgetGraph"},"graphprototype":{"name":"Graph prototype","size":{"width":16,"height":5},"js_class":"CWidgetGraphPrototype"},"hostavail":{"name":"Host availability","size":{"width":6,"height":3},"js_class":"CWidgetHostAvail"},"item":{"name":"Item value","size":{"width":4,"height":3},"js_class":"CWidgetItem"},"map":{"name":"Map","size":{"width":18,"height":5},"js_class":"CWidgetMap"},"navtree":{"name":"Map navigation tree","size":{"width":6,"height":5},"js_class":"CWidgetNavTree"},"plaintext":{"name":"Plain text","size":{"width":6,"height":3},"js_class":"CWidget"},"problemhosts":{"name":"Problem hosts","size":{"width":12,"height":5},"js_class":"CWidget"},"problems":{"name":"Problems","size":{"width":12,"height":5},"js_class":"CWidgetProblems"},"problemsbysv":{"name":"Problems by severity","size":{"width":12,"height":5},"js_class":"CWidgetProblemsBySv"},"slareport":{"name":"SLA report","size":{"width":12,"height":5},"js_class":"CWidget"},"svggraph":{"name":"Graph","size":{"width":12,"height":5},"js_class":"CWidgetSvgGraph"},"systeminfo":{"name":"System information","size":{"width":12,"height":5},"js_class":"CWidget"},"tophosts":{"name":"Top hosts","size":{"width":12,"height":5},"js_class":"CWidget"},"trigover":{"name":"Trigger overview","size":{"width":12,"height":5},"js_class":"CWidgetTrigerOver"},"url":{"name":"URL","size":{"width":12,"height":5},"js_class":"CWidgetUrl"},"web":{"name":"Web monitoring","size":{"width":6,"height":3},"js_class":"CWidget"}},"widget_last_type":"actionlog","configuration_hash":"e5b4cd2b290954c27df54e8804f35972","has_time_selector":false,"time_period":{"profileIdx":"web.dashboard.filter","profileIdx2":"1","from":"now-1h","to":"now","from_ts":1781938897,"to_ts":1781942497},"dynamic":{"has_dynamic_widgets":false,"host":null},"web_layout_mode":0,"clone":false});
+});</script><output id="msg-global-footer" class="msg-global-footer msg-warning"></output><footer role="contentinfo">Zabbix 6.4.6. &copy; 2001&ndash;2023, <a class="grey link-alt" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/">Zabbix SIA</a></footer>
+<script type="text/javascript">
+	$(function() {
+		
+		// the chkbxRange.init() method must be called after the inserted post scripts and initializing cookies
+		cookie.init();
+		chkbxRange.init();
+	});
+
+	/**
+	 * Toggles filter state and updates title and icons accordingly.
+	 *
+	 * @param {string} 	idx					User profile index
+	 * @param {string} 	value				Value
+	 * @param {object} 	idx2				An array of IDs
+	 * @param {int} 	profile_type		Profile type
+	 */
+	function updateUserProfile(idx, value, idx2, profile_type = PROFILE_TYPE_INT) {
+		const value_fields = {
+			[PROFILE_TYPE_INT]: 'value_int',
+			[PROFILE_TYPE_STR]: 'value_str'
+		};
+
+		return sendAjaxData('zabbix.php?action=profile.update', {
+			data: {
+				idx: idx,
+				[value_fields[profile_type]]: value,
+				idx2: idx2,
+				_csrf_token: "bcb95b4410a749b38946b8226f475e36c5c61bd3f7732edcb57fe4eed5f904a2"			}
+		});
+	}
+
+	/**
+	 * Add object to the list of favorites.
+	 */
+	function add2favorites(object, objectid) {
+		sendAjaxData('zabbix.php?action=favorite.create', {
+			data: {
+				object: object,
+				objectid: objectid,
+				_csrf_token: "94c23361a04b868a517e65f4e82a47fce1745fabaae018b46e4de432af6c9668"			}
+		});
+	}
+
+	/**
+	 * Remove object from the list of favorites. Remove all favorites if objectid==0.
+	 */
+	function rm4favorites(object, objectid) {
+		sendAjaxData('zabbix.php?action=favorite.delete', {
+			data: {
+				object: object,
+				objectid: objectid,
+				_csrf_token: "94c23361a04b868a517e65f4e82a47fce1745fabaae018b46e4de432af6c9668"			}
+		});
+	}
+</script>
+</div></body></html>

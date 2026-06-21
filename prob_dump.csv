@@ -1,0 +1,6 @@
+"Severity","Time","Recovery time","Status","Host","Problem","Duration","Ack","Actions","Tags"
+"Warning","2026-06-20 13:26:59","","PROBLEM","156553EPD17727-RO-BAN-GPCL-11 GNFC 10MW  Charanka","High ICMP ping loss","6m 15s","No","","component: health, component: network, Host: {Host.Name}, scope: availability, scope: performance"
+"High","2026-06-20 10:27:06","","PROBLEM","156553EPD17734-RO-BAN-GPCL-18 GIPCL 40MW PLOT NO1  Charanka","Unavailable by ICMP ping","3h 6m 8s","No","","component: health, component: network, Host: {Host.Name}, scope: availability"
+"Disaster","2026-06-20 09:47:20","","PROBLEM","156553EPD17749-RO-BAN-GPCL-33 SUN CLEAN POWER Charanka","Unavailable by ICMP ping Since 24 Hours","3h 45m 54s","No","","component: health, component: network, Host: {Host.Name}, scope: availability"
+"High","2026-06-19 17:47:01","","PROBLEM","156553EPD17729-RO-BAN-GPCL-13 WTP SOLAR  Charanka","Unavailable by ICMP ping","19h 46m 13s","No","","component: health, component: network, Host: {Host.Name}, scope: availability"
+"Disaster","2026-06-19 14:37:11","","PROBLEM","156553EPD17739-RO-BAN-GPCL-23 EMAMI 10MW Charanka","Unavailable by ICMP ping Since 24 Hours","22h 56m 3s","No","","component: health, component: network, Host: {Host.Name}, scope: availability"

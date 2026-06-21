@@ -1,0 +1,810 @@
+<!DOCTYPE html><html lang="en" theme="blue-theme">	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="Author" content="Zabbix SIA" /><title>Problems</title>		<link rel="icon" href="favicon.ico">
+		<link rel="apple-touch-icon-precomposed" sizes="76x76" href="assets/img/apple-touch-icon-76x76-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="120x120" href="assets/img/apple-touch-icon-120x120-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="152x152" href="assets/img/apple-touch-icon-152x152-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="180x180" href="assets/img/apple-touch-icon-180x180-precomposed.png">
+		<link rel="icon" sizes="192x192" href="assets/img/touch-icon-192x192.png">
+		<meta name="msapplication-TileImage" content="assets/img/ms-tile-144x144.png">
+		<meta name="msapplication-TileColor" content="#d40000">
+		<meta name="msapplication-config" content="none"/><link rel="stylesheet" type="text/css" href="assets/styles/blue-theme.css?1692691831"><style>:root {
+--severity-color-na-bg: #97AAB3;
+--severity-color-info-bg: #7499FF;
+--severity-color-warning-bg: #FFC859;
+--severity-color-average-bg: #FFA059;
+--severity-color-high-bg: #E97659;
+--severity-color-disaster-bg: #E45959;
+}
+.na-bg, .na-bg input[type="radio"]:checked + label, .na-bg:before, .flh-na-bg, .status-na-bg, .status-na-bg:before { background-color: #97AAB3 }
+.info-bg, .info-bg input[type="radio"]:checked + label, .info-bg:before, .flh-info-bg, .status-info-bg, .status-info-bg:before { background-color: #7499FF }
+.warning-bg, .warning-bg input[type="radio"]:checked + label, .warning-bg:before, .flh-warning-bg, .status-warning-bg, .status-warning-bg:before { background-color: #FFC859 }
+.average-bg, .average-bg input[type="radio"]:checked + label, .average-bg:before, .flh-average-bg, .status-average-bg, .status-average-bg:before { background-color: #FFA059 }
+.high-bg, .high-bg input[type="radio"]:checked + label, .high-bg:before, .flh-high-bg, .status-high-bg, .status-high-bg:before { background-color: #E97659 }
+.disaster-bg, .disaster-bg input[type="radio"]:checked + label, .disaster-bg:before, .flh-disaster-bg, .status-disaster-bg, .status-disaster-bg:before { background-color: #E45959 }
+
+</style><script>
+		const PHP_TZ_OFFSETS = [19800];
+		const PHP_ZBX_FULL_DATE_TIME = "Y-m-d H:i:s";
+	
+if (locale === undefined) { var locale = {}; }</script><script src="js/browsers.js?1692691822"></script><script src="jsLoader.php?lang=en_US&amp;ver=6.4.6&amp;showGuiMessaging=1"></script><script src="jsLoader.php?ver=6.4.6&amp;lang=en_US&amp;files%5B0%5D=class.calendar.js&amp;files%5B1%5D=gtlc.js&amp;files%5B2%5D=layout.mode.js&amp;files%5B3%5D=class.tabfilter.js&amp;files%5B4%5D=class.tabfilteritem.js&amp;files%5B5%5D=class.tagfilteritem.js&amp;files%5B6%5D=servercheck.js"></script></head>
+<body><aside class="sidebar is-compact"><div class="sidebar-header"><a class="logo" href="zabbix.php?action=dashboard.view"><div class="zabbix-sidebar-logo sidebar-logo"></div><div class="zabbix-sidebar-logo-compact sidebar-logo-compact"></div></a><div class="sidebar-header-buttons"><button type="button" class="button-compact js-sidebar-mode" title="Collapse sidebar">Collapse sidebar</button><button type="button" class="button-expand js-sidebar-mode" title="Expand sidebar">Expand sidebar</button><button type="button" class="button-hide js-sidebar-mode" title="Hide sidebar">Hide sidebar</button><button type="button" class="button-show js-sidebar-mode" title="Show sidebar">Show sidebar</button></div></div><form method="get" action="zabbix.php" accept-charset="utf-8" class="form-search" role="search"><input type="hidden" name="action" value="search"><input type="text" id="search" name="search" value="" maxlength="255" class="search" aria-label="type here to search" autocomplete="off"><button type="submit" class="search-icon" title="Search" disabled=""></button></form><div class="sidebar-nav scrollable" tabindex="-1"><nav class="nav-main" role="navigation" aria-label="Main navigation"><ul class="menu-main"><li id="dashboard"><a class="icon-dashboards" href="zabbix.php?action=dashboard.view">Dashboards</a></li><li id="view" class="has-submenu is-selected"><a class="icon-monitoring" href="#">Monitoring</a><ul class="submenu"><li class="is-selected"><a href="zabbix.php?action=problem.view">Problems</a></li><li><a href="zabbix.php?action=host.view">Hosts</a></li><li><a href="zabbix.php?action=latest.view">Latest data</a></li><li><a href="zabbix.php?action=map.view">Maps</a></li></ul></li><li id="cm" class="has-submenu"><a class="icon-inventory" href="#">Inventory</a><ul class="submenu"><li><a href="hostinventories.php">Hosts</a></li></ul></li><li id="reports" class="has-submenu"><a class="icon-reports" href="#">Reports</a><ul class="submenu"><li><a href="report2.php">Availability report</a></li><li><a href="toptriggers.php">Triggers top 100</a></li></ul></li></ul></nav><nav class="nav-user" role="navigation" aria-label="User menu"><ul class="menu-user"><li><a class="icon-support" title="Zabbix Technical Support" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/support">Support</a></li><li><a class="icon-integrations" title="Zabbix Integrations" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/integrations">Integrations</a></li><li><a class="icon-help" title="Help" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/documentation/6.4/">Help</a></li><li><a class="icon-profile" title="sipl-team (SIPL field team)" href="zabbix.php?action=userprofile.edit">User settings</a></li><li onclick="ZABBIX.logout(event)"><a class="icon-signout" title="Sign out" href="#signout">Sign out</a></li></ul></nav></div></aside><div class="wrapper"><script>
+	const view = {
+		refresh_url: null,
+		refresh_simple_url: null,
+		refresh_interval: null,
+		filter_defaults: null,
+		filter: null,
+		global_timerange: null,
+		active_filter: null,
+		refresh_timer: null,
+		filter_counter_fetch: null,
+		running: false,
+		timeout: null,
+		deferred: null,
+		opened_eventids: [],
+
+		init({filter_options, refresh_url, refresh_interval, filter_defaults}) {
+			this.refresh_url = new Curl(refresh_url);
+			this.refresh_interval = refresh_interval;
+			this.filter_defaults = filter_defaults;
+
+			const url = new Curl('zabbix.php');
+			url.setArgument('action', 'problem.view.refresh');
+			this.refresh_simple_url = url.getUrl();
+
+			this.initFilter(filter_options);
+			$.subscribe('event.rank_change', () => view.refreshNow());
+
+			this.initAcknowledge();
+			this.initExpandables();
+
+			if (this.refresh_interval != 0) {
+				this.running = true;
+				this.scheduleRefresh();
+			}
+
+			$(document).on({
+				mouseenter: function() {
+					if ($(this)[0].scrollWidth > $(this)[0].offsetWidth) {
+						$(this).attr({title: $(this).text()});
+					}
+				},
+				mouseleave: function() {
+					if ($(this).is('[title]')) {
+						$(this).removeAttr('title');
+					}
+				}
+			}, 'table.compact-view a.link-action');
+
+			// Activate blinking.
+			jqBlink.blink();
+		},
+
+		initFilter(filter_options) {
+			if (!filter_options) {
+				return;
+			}
+
+			this.filter = new CTabFilter($('#monitoring_problem_filter')[0], filter_options);
+			this.active_filter = this.filter._active_item;
+			this.global_timerange = {
+				from: filter_options.timeselector.from,
+				to: filter_options.timeselector.to
+			};
+
+			/**
+			 * Update on filter changes.
+			 */
+			this.filter.on(TABFILTER_EVENT_URLSET, () => {
+				const url = new Curl();
+				url.setArgument('action', 'problem.view.csv');
+				$('#export_csv').attr('data-url', url.getUrl());
+
+				this.refresh_url.setArgument('page', '1');
+
+				this.refreshResults();
+				this.refreshCounters();
+				chkbxRange.clearSelectedOnFilterChange();
+
+				if (this.active_filter !== this.filter._active_item) {
+					this.active_filter = this.filter._active_item;
+					chkbxRange.checkObjectAll(chkbxRange.pageGoName, false);
+				}
+			});
+
+			/**
+			 * Update filter item counter when filter settings updated.
+			 */
+			this.filter.on(TABFILTER_EVENT_UPDATE, (e) => {
+				if (!this.filter._active_item.hasCounter() || e.detail.filter_property !== 'properties') {
+					return;
+				}
+
+				if (this.filter_counter_fetch) {
+					this.filter_counter_fetch.abort();
+				}
+
+				this.filter_counter_fetch = new AbortController();
+				const filter_item = this.filter._active_item;
+
+				fetch(this.refresh_simple_url, {
+					method: 'POST',
+					signal: this.filter_counter_fetch.signal,
+					body: new URLSearchParams({filter_counters: 1, counter_index: filter_item._index})
+				})
+					.then(response => response.json())
+					.then(response => {
+						filter_item.updateCounter(response.filter_counters.pop());
+					});
+			});
+
+			this.refreshCounters();
+
+			// Keep timeselector changes in global_timerange.
+			$.subscribe('timeselector.rangeupdate', (e, data) => {
+				if (data.idx === 'web.monitoring.problem') {
+					this.global_timerange.from = data.from;
+					this.global_timerange.to = data.to;
+				}
+
+				this.refresh_url.setArgument('page', 1);
+				this.refreshResults();
+			});
+		},
+
+		initAcknowledge() {
+			$.subscribe('acknowledge.create', function(event, response) {
+				// Clear all selected checkboxes in Monitoring->Problems.
+				if (chkbxRange.prefix === 'problem') {
+					chkbxRange.checkObjectAll(chkbxRange.pageGoName, false);
+					chkbxRange.clearSelectedOnFilterChange();
+				}
+
+				view.refreshNow();
+
+				clearMessages();
+				addMessage(makeMessageBox('good', [], response.success.title));
+			});
+
+			$(document).on('submit', '#problem_form', function(e) {
+				e.preventDefault();
+
+				acknowledgePopUp({eventids: Object.keys(chkbxRange.getSelectedIds())}, this);
+			});
+		},
+
+		initExpandables() {
+			const table = this.getCurrentResultsTable();
+			const expandable_buttons = table.querySelectorAll("button[data-action='show_symptoms']");
+
+			expandable_buttons.forEach((btn, idx, array) => {
+				['click','keydown'].forEach((type) => {
+					btn.addEventListener(type, (e) => {
+						if (e.type === 'click' || e.which === 13) {
+							this.showSymptoms(btn, idx, array);
+						}
+					});
+				});
+
+				// Check if cause events were opened. If so, after (not full) refresh open them again.
+				if (this.opened_eventids.includes(btn.dataset.eventid)) {
+					const rows = table.querySelectorAll("tr[data-cause-eventid='" + btn.dataset.eventid + "']");
+
+					[...rows].forEach((row) => row.classList.remove('hidden'));
+
+					btn.classList.replace('btn-widget-expand', 'btn-widget-collapse');
+					btn.title = 'Collapse';
+				}
+			});
+
+			// Fix last row border depending if it is opened or closed.
+			const rows = table.querySelectorAll('.problem-row');
+
+			if (rows.length > 0) {
+				const row = [...rows].pop();
+				const btn = row.querySelector('button[data-action="show_symptoms"]');
+				const is_collapsed = btn !== null && btn.classList.contains('btn-widget-expand');
+
+				[...row.children].forEach((td) => td.style.borderBottomStyle = is_collapsed ? 'hidden' : 'solid');
+			}
+		},
+
+		showSymptoms(btn, idx, array) {
+			// Prevent multiple clicking by first disabling button.
+			btn.disabled = true;
+
+			const table = this.getCurrentResultsTable();
+			let rows = table.querySelectorAll("tr[data-cause-eventid='" + btn.dataset.eventid + "']");
+
+			// Show symptom rows for current cause. Sliding animations are not supported on table rows.
+			if (rows[0].classList.contains('hidden')) {
+				btn.classList.replace('btn-widget-expand', 'btn-widget-collapse');
+				btn.title = 'Collapse';
+
+				this.opened_eventids.push(btn.dataset.eventid);
+
+				[...rows].forEach((row) => row.classList.remove('hidden'));
+			}
+			else {
+				btn.classList.replace('btn-widget-collapse', 'btn-widget-expand');
+				btn.title = 'Expand';
+
+				this.opened_eventids = this.opened_eventids.filter((id) => id !== btn.dataset.eventid);
+
+				[...rows].forEach((row) => row.classList.add('hidden'));
+			}
+
+			// Fix last row border depending if it is opened or closed.
+			rows = table.querySelectorAll('.problem-row');
+
+			if (rows.length > 0) {
+				const row = [...rows].pop();
+				const is_collapsed = btn !== null && btn.classList.contains('btn-widget-expand');
+
+				[...row.children].forEach((td) => td.style.borderBottomStyle = is_collapsed ? 'hidden' : 'solid');
+			}
+
+			// When complete enable button again.
+			btn.disabled = false;
+		},
+
+		getCurrentResultsTable() {
+			return document.getElementById('flickerfreescreen_problem');
+		},
+
+		getCurrentDebugBlock() {
+			return document.querySelector('.wrapper > .debug-output');
+		},
+
+		setLoading() {
+			this.getCurrentResultsTable().classList.add('is-loading', 'is-loading-fadein', 'delayed-15s');
+		},
+
+		clearLoading() {
+			this.getCurrentResultsTable().classList.remove('is-loading', 'is-loading-fadein', 'delayed-15s');
+		},
+
+		refreshBody(body) {
+			this.getCurrentResultsTable().replaceWith(
+				new DOMParser().parseFromString(body, 'text/html').body.firstElementChild
+			);
+			chkbxRange.init();
+			this.initExpandables();
+		},
+
+		refreshDebug(debug) {
+			this.getCurrentDebugBlock().replaceWith(
+				new DOMParser().parseFromString(debug, 'text/html').body.firstElementChild
+			);
+		},
+
+		refresh() {
+			this.setLoading();
+
+			const params = this.refresh_url.getArgumentsObject();
+			const exclude = ['action', 'filter_src', 'filter_show_counter', 'filter_custom_time', 'filter_name'];
+			const post_data = Object.keys(params)
+				.filter(key => !exclude.includes(key))
+				.reduce((post_data, key) => {
+					post_data[key] = (typeof params[key] === 'object')
+						? [...params[key]].filter(i => i)
+						: params[key];
+					return post_data;
+				}, {});
+
+			this.deferred = $.ajax({
+				url: this.refresh_simple_url,
+				data: post_data,
+				type: 'post',
+				dataType: 'json'
+			});
+
+			return this.bindDataEvents(this.deferred);
+		},
+
+		refreshNow() {
+			this.unscheduleRefresh();
+			this.refresh();
+		},
+
+		scheduleRefresh() {
+			this.unscheduleRefresh();
+			this.timeout = setTimeout((function () {
+				this.timeout = null;
+				this.refresh();
+			}).bind(this), this.refresh_interval);
+		},
+
+		unscheduleRefresh() {
+			if (this.timeout !== null) {
+				clearTimeout(this.timeout);
+				this.timeout = null;
+			}
+		},
+
+		bindDataEvents(deferred) {
+			const that = this;
+
+			deferred
+				.done(function(response) {
+					that.onDataDone.call(that, response);
+				})
+				.always(this.onDataAlways.bind(this));
+
+			return deferred;
+		},
+
+		onDataAlways() {
+			if (this.running) {
+				this.deferred = null;
+				this.scheduleRefresh();
+			}
+		},
+
+		onDataDone(response) {
+			this.clearLoading();
+			this.refreshBody(response.body);
+
+			if ('messages' in response) {
+				clearMessages();
+				addMessage(makeMessageBox('good', [], response.messages, true, false));
+			}
+
+			('debug' in response) && this.refreshDebug(response.debug);
+		},
+
+		/**
+		 * Refresh results table.
+		 */
+		refreshResults() {
+			const url = new Curl();
+			const refresh_url = new Curl('zabbix.php');
+			const data = Object.assign({}, this.filter_defaults, this.global_timerange, url.getArgumentsObject());
+
+			// Modify filter data.
+			data.inventory = data.inventory
+				? data.inventory.filter(inventory => 'value' in inventory && inventory.value !== '')
+				: data.inventory;
+			data.tags = data.tags
+				? data.tags.filter(tag => !(tag.tag === '' && tag.value === ''))
+				: data.tags;
+			data.severities = data.severities
+				? data.severities.filter((value, key) => value == key)
+				: data.severities;
+			data.page = this.refresh_url.getArgument('page') ?? 1;
+
+			if (!data.filter_custom_time) {
+				data.from = this.global_timerange.from;
+				data.to = this.global_timerange.to;
+			}
+
+			Object.entries(data).forEach(([key, value]) => {
+				if (['filter_show_counter', 'filter_custom_time', 'action'].indexOf(key) !== -1) {
+					return;
+				}
+
+				refresh_url.setArgument(key, value);
+			});
+
+			refresh_url.setArgument('action', 'problem.view.refresh');
+			this.refresh_url = refresh_url;
+			this.refreshNow();
+		},
+
+		refreshCounters() {
+			clearTimeout(this.refresh_timer);
+
+			fetch(this.refresh_simple_url, {
+				method: 'POST',
+				body: new URLSearchParams({filter_counters: 1})
+			})
+				.then(response => response.json())
+				.then(response => {
+					if (response.filter_counters) {
+						this.filter.updateCounters(response.filter_counters);
+					}
+
+					if (this.refresh_interval > 0) {
+						this.refresh_timer = setTimeout(() => this.refreshCounters(), this.refresh_interval);
+					}
+				})
+				.catch(() => {
+					/**
+					 * On error restart refresh timer.
+					 * If refresh interval is set to 0 (no refresh) schedule initialization request after 5 sec.
+					 */
+					this.refresh_timer = setTimeout(() => this.refreshCounters(),
+						this.refresh_interval > 0 ? this.refresh_interval : 5000
+					);
+				});
+		},
+
+		editHost(hostid) {
+			this.openHostPopup({hostid});
+		},
+
+		openHostPopup(host_data) {
+			clearMessages();
+
+			const original_url = location.href;
+			const overlay = PopUp('popup.host.edit', host_data, {
+				dialogueid: 'host_edit',
+				dialogue_class: 'modal-popup-large',
+				prevent_navigation: true
+			});
+
+			overlay.$dialogue[0].addEventListener('dialogue.create', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('dialogue.update', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('dialogue.delete', this.events.hostSuccess, {once: true});
+			overlay.$dialogue[0].addEventListener('overlay.close', () => {
+				history.replaceState({}, '', original_url);
+			}, {once: true});
+		},
+
+		events: {
+			hostSuccess(e) {
+				const data = e.detail;
+
+				if ('success' in data) {
+					const title = data.success.title;
+					let messages = [];
+
+					if ('messages' in data.success) {
+						messages = data.success.messages;
+					}
+
+					addMessage(makeMessageBox('good', messages, title));
+				}
+
+				uncheckTableRows('problem');
+				view.refreshResults();
+				view.refreshCounters();
+			}
+		}
+	};
+</script>
+<header class="header-title"><nav class="sidebar-nav-toggle" role="navigation" aria-label="Sidebar control"><button type="button" id="sidebar-button-toggle" class="button-toggle" title="Show sidebar">Show sidebar</button></nav><div><h1 id="page-title-general">Problems</h1></div><div class="header-doc-link"><a title="Help" target="_blank" rel="noopener noreferrer" class="icon-doc-link" href="https://www.zabbix.com/documentation/6.4/en/manual/web_interface/frontend_sections/monitoring/problems"></a></div><div class="header-controls"><nav aria-label="Content controls"><ul><li><button type="button" data-url="zabbix.php?action=problem.view.csv" id="export_csv">Export to CSV</button></li><li><button type="button" title="Kiosk mode" data-layout-mode="1" class="layout-mode btn-kiosk">&nbsp;</button></li></ul></nav></div></header><main><div id="monitoring_problem_filter" class="filter-container tabfilter-container filter-space" data-disable-initial-check="1" data-accessible="1" data-profile-idx="web.monitoring.problem" data-profile-idx2="0"><nav><ul><li><button type="button" data-action="selectPrevTab" class="btn-iterator-page-previous"></button></li><li><ul class="ui-sortable-container"><li data-target="tabfilter_0" class="tabfilter-item-label selected expanded"><a aria-label="Home" class="icon-filter tabfilter-item-link" tabindex="-1" role="button" href="javascript:void(0)"></a></li><li data-target="tabfilter_1" class="tabfilter-item-label"><a tabindex="-1" class="tabfilter-item-link" role="button" href="javascript:void(0)">Charanka</a></li></ul></li><li><ul><li><button type="button" data-action="toggleTabsList" class="btn-widget-expand"></button></li><li><button type="button" data-action="selectNextTab" class="btn-iterator-page-next"></button></li><li data-target="tabfilter_timeselector" class="tabfilter-item-label disabled"><a class="tabfilter-item-link btn-time disabled" tabindex="-1" role="button" href="javascript:void(0)">2024-03-15 00:00:00 – 2024-04-14 00:00:00</a></li><li><button type="button" disabled="disabled" class="btn-time-left"></button></li><li><button type="button" disabled="disabled" class="btn-time-out">Zoom out</button></li><li><button type="button" disabled="disabled" class="btn-time-right"></button></li></ul></li></ul></nav><div class="tabfilter-content-container"><div class="tabfilter-tabs-container"><div id="tabfilter_0"><form method="get" action="zabbix.php" accept-charset="utf-8" name="zbx_filter"><div class="table filter-forms"><div class="cell"><ul class="table-forms"><li><div class="table-forms-td-left"><label>Show</label></div><div class="table-forms-td-right"><ul id="show_#{uniqid}" class="radio-list-control"><li><input type="radio" id="show_1#{uniqid}" name="show" value="1" checked="checked"><label for="show_1#{uniqid}">Recent problems</label></li><li><input type="radio" id="show_3#{uniqid}" name="show" value="3"><label for="show_3#{uniqid}">Problems</label></li><li><input type="radio" id="show_2#{uniqid}" name="show" value="2"><label for="show_2#{uniqid}">History</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="groupids_#{uniqid}_ms">Host groups</label></div><div class="table-forms-td-right"><div id="groupids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="hostids_#{uniqid}_ms">Hosts</label></div><div class="table-forms-td-right"><div id="hostids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="triggerids_#{uniqid}_ms">Triggers</label></div><div class="table-forms-td-right"><div id="triggerids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="name_#{uniqid}">Problem</label></div><div class="table-forms-td-right"><input type="text" id="name_#{uniqid}" name="name" value="" maxlength="255" style="width: 300px;"></div></li><li><div class="table-forms-td-left"><label>Severity</label></div><div class="table-forms-td-right"><ul class="checkbox-list vertical" style="--columns: 3;--rows: 2;"><li><input type="checkbox" id="severities_0_#{uniqid}" name="severities[0]" value="0" class="checkbox-radio"><label for="severities_0_#{uniqid}"><span></span>Not classified</label></li><li><input type="checkbox" id="severities_1_#{uniqid}" name="severities[1]" value="1" class="checkbox-radio"><label for="severities_1_#{uniqid}"><span></span>Information</label></li><li><input type="checkbox" id="severities_2_#{uniqid}" name="severities[2]" value="2" class="checkbox-radio"><label for="severities_2_#{uniqid}"><span></span>Warning</label></li><li><input type="checkbox" id="severities_3_#{uniqid}" name="severities[3]" value="3" class="checkbox-radio"><label for="severities_3_#{uniqid}"><span></span>Average</label></li><li><input type="checkbox" id="severities_4_#{uniqid}" name="severities[4]" value="4" class="checkbox-radio"><label for="severities_4_#{uniqid}"><span></span>High</label></li><li><input type="checkbox" id="severities_5_#{uniqid}" name="severities[5]" value="5" class="checkbox-radio"><label for="severities_5_#{uniqid}"><span></span>Disaster</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="age_state_#{uniqid}">Age less than</label></div><div class="table-forms-td-right"><input type="checkbox" id="age_state_#{uniqid}" name="age_state" value="1" class="checkbox-radio" unchecked-value="0"><label for="age_state_#{uniqid}"><span></span></label><input type="text" name="age" value="14" maxlength="3" onchange="validateNumericBox(this, false, false);" style="width: 75px;" disabled="disabled"><div class="form-input-margin"></div>days</div></li><li><div class="table-forms-td-left"><label for="show_symptoms_#{uniqid}">Show symptoms</label></div><div class="table-forms-td-right"><input type="checkbox" id="show_symptoms_#{uniqid}" name="show_symptoms" value="1" class="checkbox-radio" unchecked-value="0"><label for="show_symptoms_#{uniqid}"><span></span></label></div></li><li><div class="table-forms-td-left"><label for="show_suppressed_#{uniqid}">Show suppressed problems</label></div><div class="table-forms-td-right"><input type="checkbox" id="show_suppressed_#{uniqid}" name="show_suppressed" value="1" class="checkbox-radio" unchecked-value="0"><label for="show_suppressed_#{uniqid}"><span></span></label></div></li><li><div class="table-forms-td-left"><label for="unacknowledged_#{uniqid}">Show unacknowledged only</label></div><div class="table-forms-td-right"><input type="checkbox" id="unacknowledged_#{uniqid}" name="unacknowledged" value="1" class="checkbox-radio" unchecked-value="0"><label for="unacknowledged_#{uniqid}"><span></span></label></div></li></ul></div><div class="cell"><ul class="table-forms"><li><div class="table-forms-td-left"><label>Host inventory</label></div><div class="table-forms-td-right"><table id="filter-inventory_#{uniqid}"><tbody><tr><td colspan="3"><button type="button" name="inventory_add" class="btn-link element-table-add">Add</button></td></tr></tbody></table></div></li><li><div class="table-forms-td-left"><label>Tags</label></div><div class="table-forms-td-right"><table id="filter-tags_#{uniqid}"><tbody><tr><td colspan="4"><ul id="evaltype_#{uniqid}" class="radio-list-control"><li><input type="radio" id="evaltype_0#{uniqid}" name="evaltype" value="0" checked="checked"><label for="evaltype_0#{uniqid}">And/Or</label></li><li><input type="radio" id="evaltype_2#{uniqid}" name="evaltype" value="2"><label for="evaltype_2#{uniqid}">Or</label></li></ul></td></tr><tr><td colspan="3"><button type="button" name="tags_add" class="btn-link element-table-add">Add</button></td></tr></tbody></table></div></li><li><div class="table-forms-td-left"><label>Show tags</label></div><div class="table-forms-td-right"><ul class="hor-list"><li><ul id="show_tags_#{uniqid}" class="radio-list-control"><li><input type="radio" id="show_tags_0#{uniqid}" name="show_tags" value="0"><label for="show_tags_0#{uniqid}">None</label></li><li><input type="radio" id="show_tags_1#{uniqid}" name="show_tags" value="1"><label for="show_tags_1#{uniqid}">1</label></li><li><input type="radio" id="show_tags_2#{uniqid}" name="show_tags" value="2"><label for="show_tags_2#{uniqid}">2</label></li><li><input type="radio" id="show_tags_3#{uniqid}" name="show_tags" value="3" checked="checked"><label for="show_tags_3#{uniqid}">3</label></li></ul></li><li><div class="form-input-margin"></div></li><li><label>Tag name</label></li><li><ul id="tag_name_format_#{uniqid}" class="radio-list-control"><li><input type="radio" id="tag_name_format_0#{uniqid}" name="tag_name_format" value="0" checked="checked"><label for="tag_name_format_0#{uniqid}">Full</label></li><li><input type="radio" id="tag_name_format_1#{uniqid}" name="tag_name_format" value="1"><label for="tag_name_format_1#{uniqid}">Shortened</label></li><li><input type="radio" id="tag_name_format_2#{uniqid}" name="tag_name_format" value="2"><label for="tag_name_format_2#{uniqid}">None</label></li></ul></li></ul></div></li><li><div class="table-forms-td-left"><label for="tag_priority_#{uniqid}">Tag display priority</label></div><div class="table-forms-td-right"><input type="text" id="tag_priority_#{uniqid}" name="tag_priority" value="" maxlength="255" style="width: 300px;" placeholder="comma-separated list"></div></li><li><div class="table-forms-td-left"><label>Show operational data</label></div><div class="table-forms-td-right"><ul class="radio-list-control"><li><input type="radio" id="show_opdata_0_#{uniqid}" name="show_opdata" value="0" checked="checked"><label for="show_opdata_0_#{uniqid}">None</label></li><li><input type="radio" id="show_opdata_1_#{uniqid}" name="show_opdata" value="1"><label for="show_opdata_1_#{uniqid}">Separately</label></li><li><input type="radio" id="show_opdata_2_#{uniqid}" name="show_opdata" value="2"><label for="show_opdata_2_#{uniqid}">With problem name</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="compact_view_#{uniqid}">Compact view</label></div><div class="table-forms-td-right"><input type="checkbox" id="compact_view_#{uniqid}" name="compact_view" value="1" class="checkbox-radio" unchecked-value="0"><label for="compact_view_#{uniqid}"><span></span></label><div class="table-forms-second-column"><label for="show_timeline_#{uniqid}" class="second-column-label">Show timeline</label><input type="checkbox" id="show_timeline_#{uniqid}" name="show_timeline" value="1" class="checkbox-radio" checked="checked" unchecked-value="0"><label for="show_timeline_#{uniqid}"><span></span></label></div></div></li><li><div class="table-forms-td-left"><label for="details_#{uniqid}">Show details</label></div><div class="table-forms-td-right"><input type="checkbox" id="details_#{uniqid}" name="details" value="1" class="checkbox-radio" unchecked-value="0"><label for="details_#{uniqid}"><span></span></label><div class="filter-highlight-row-cb table-forms-second-column"><label for="highlight_row_#{uniqid}" class="second-column-label">Highlight whole row</label><input type="checkbox" id="highlight_row_#{uniqid}" name="highlight_row" value="1" class="checkbox-radio" disabled="disabled" unchecked-value="0"><label for="highlight_row_#{uniqid}"><span></span></label></div></div></li></ul></div></div><button type="submit" class="form-submit-hidden"></button><input type="hidden" name="filter_name" value="#{filter_name}"><input type="hidden" name="filter_show_counter" value="#{filter_show_counter}"><input type="hidden" name="filter_custom_time" value="#{filter_custom_time}"><input type="hidden" name="sort" value="#{sort}"><input type="hidden" name="sortorder" value="#{sortorder}"></form></div><div id="tabfilter_timeselector" class="display-none"><div class="filter-container time-selection-container"><div class="time-input"><ul><li><label for="from">From</label></li><li><div class="calendar-control"><input type="text" id="from" name="from" value="2024-03-15 00:00:00" maxlength="19"><button type="button" id="from_calendar" name="from_calendar" class="icon-cal" onclick="toggleCalendar(this, &quot;from&quot;, &quot;Y-m-d H:i:s&quot;);"></button></div></li></ul><ul data-error-for="from" class="time-input-error" style="display: none"><li class="red"></li></ul><ul><li><label for="to">To</label></li><li><div class="calendar-control"><input type="text" id="to" name="to" value="2024-04-14 00:00:00" maxlength="19"><button type="button" id="to_calendar" name="to_calendar" class="icon-cal" onclick="toggleCalendar(this, &quot;to&quot;, &quot;Y-m-d H:i:s&quot;);"></button></div></li></ul><ul data-error-for="to" class="time-input-error" style="display: none"><li class="red"></li></ul><ul><li><button type="button" id="apply" name="apply">Apply</button></li></ul></div><div class="time-quick-range"><div class="cell"><ul class="time-quick"><li><a data-from="now-2d" data-to="now" data-label="Last 2 days" role="button" href="javascript:void(0)">Last 2 days</a></li><li><a data-from="now-7d" data-to="now" data-label="Last 7 days" role="button" href="javascript:void(0)">Last 7 days</a></li><li><a data-from="now-30d" data-to="now" data-label="Last 30 days" role="button" href="javascript:void(0)">Last 30 days</a></li><li><a data-from="now-3M" data-to="now" data-label="Last 3 months" role="button" href="javascript:void(0)">Last 3 months</a></li><li><a data-from="now-6M" data-to="now" data-label="Last 6 months" role="button" href="javascript:void(0)">Last 6 months</a></li><li><a data-from="now-1y" data-to="now" data-label="Last 1 year" role="button" href="javascript:void(0)">Last 1 year</a></li><li><a data-from="now-2y" data-to="now" data-label="Last 2 years" role="button" href="javascript:void(0)">Last 2 years</a></li></ul></div><div class="cell"><ul class="time-quick"><li><a data-from="now-1d/d" data-to="now-1d/d" data-label="Yesterday" role="button" href="javascript:void(0)">Yesterday</a></li><li><a data-from="now-2d/d" data-to="now-2d/d" data-label="Day before yesterday" role="button" href="javascript:void(0)">Day before yesterday</a></li><li><a data-from="now-1w/d" data-to="now-1w/d" data-label="This day last week" role="button" href="javascript:void(0)">This day last week</a></li><li><a data-from="now-1w/w" data-to="now-1w/w" data-label="Previous week" role="button" href="javascript:void(0)">Previous week</a></li><li><a data-from="now-1M/M" data-to="now-1M/M" data-label="Previous month" role="button" href="javascript:void(0)">Previous month</a></li><li><a data-from="now-1y/y" data-to="now-1y/y" data-label="Previous year" role="button" href="javascript:void(0)">Previous year</a></li></ul></div><div class="cell"><ul class="time-quick"><li><a data-from="now/d" data-to="now/d" data-label="Today" role="button" href="javascript:void(0)">Today</a></li><li><a data-from="now/d" data-to="now" data-label="Today so far" role="button" href="javascript:void(0)">Today so far</a></li><li><a data-from="now/w" data-to="now/w" data-label="This week" role="button" href="javascript:void(0)">This week</a></li><li><a data-from="now/w" data-to="now" data-label="This week so far" role="button" href="javascript:void(0)">This week so far</a></li><li><a data-from="now/M" data-to="now/M" data-label="This month" role="button" href="javascript:void(0)">This month</a></li><li><a data-from="now/M" data-to="now" data-label="This month so far" role="button" href="javascript:void(0)">This month so far</a></li><li><a data-from="now/y" data-to="now/y" data-label="This year" role="button" href="javascript:void(0)">This year</a></li><li><a data-from="now/y" data-to="now" data-label="This year so far" role="button" href="javascript:void(0)">This year so far</a></li></ul></div><div class="cell"><ul class="time-quick"><li><a data-from="now-5m" data-to="now" data-label="Last 5 minutes" role="button" href="javascript:void(0)">Last 5 minutes</a></li><li><a data-from="now-15m" data-to="now" data-label="Last 15 minutes" role="button" href="javascript:void(0)">Last 15 minutes</a></li><li><a data-from="now-30m" data-to="now" data-label="Last 30 minutes" role="button" href="javascript:void(0)">Last 30 minutes</a></li><li><a data-from="now-1h" data-to="now" data-label="Last 1 hour" role="button" href="javascript:void(0)">Last 1 hour</a></li><li><a data-from="now-3h" data-to="now" data-label="Last 3 hours" role="button" href="javascript:void(0)">Last 3 hours</a></li><li><a data-from="now-6h" data-to="now" data-label="Last 6 hours" role="button" href="javascript:void(0)">Last 6 hours</a></li><li><a data-from="now-12h" data-to="now" data-label="Last 12 hours" role="button" href="javascript:void(0)">Last 12 hours</a></li><li><a data-from="now-24h" data-to="now" data-label="Last 1 day" role="button" href="javascript:void(0)">Last 1 day</a></li></ul></div></div></div></div></div><div class="filter-forms form-buttons"><button type="submit" name="filter_update" value="1" class="btn-alt">Update</button><button type="submit" name="filter_new" value="1" class="btn-alt">Save as</button><button type="submit" name="filter_apply" value="1">Apply</button><button type="submit" name="filter_reset" value="1" class="btn-alt">Reset</button></div></div><template id="filter-monitoring-problem" data-template="monitoring.problem.filter"><form method="get" action="zabbix.php" accept-charset="utf-8" name="zbx_filter"><div class="table filter-forms"><div class="cell"><ul class="table-forms"><li><div class="table-forms-td-left"><label>Show</label></div><div class="table-forms-td-right"><ul id="show_#{uniqid}" class="radio-list-control"><li><input type="radio" id="show_1#{uniqid}" name="show" value="1" checked="checked"><label for="show_1#{uniqid}">Recent problems</label></li><li><input type="radio" id="show_3#{uniqid}" name="show" value="3"><label for="show_3#{uniqid}">Problems</label></li><li><input type="radio" id="show_2#{uniqid}" name="show" value="2"><label for="show_2#{uniqid}">History</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="groupids_#{uniqid}_ms">Host groups</label></div><div class="table-forms-td-right"><div id="groupids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="hostids_#{uniqid}_ms">Hosts</label></div><div class="table-forms-td-right"><div id="hostids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="triggerids_#{uniqid}_ms">Triggers</label></div><div class="table-forms-td-right"><div id="triggerids_#{uniqid}" class="multiselect" role="application" style="width: 300px;"><div aria-live="assertive" aria-atomic="true"></div></div></div></li><li><div class="table-forms-td-left"><label for="name_#{uniqid}">Problem</label></div><div class="table-forms-td-right"><input type="text" id="name_#{uniqid}" name="name" value="" maxlength="255" style="width: 300px;"></div></li><li><div class="table-forms-td-left"><label>Severity</label></div><div class="table-forms-td-right"><ul class="checkbox-list vertical" style="--columns: 3;--rows: 2;"><li><input type="checkbox" id="severities_0_#{uniqid}" name="severities[0]" value="0" class="checkbox-radio"><label for="severities_0_#{uniqid}"><span></span>Not classified</label></li><li><input type="checkbox" id="severities_1_#{uniqid}" name="severities[1]" value="1" class="checkbox-radio"><label for="severities_1_#{uniqid}"><span></span>Information</label></li><li><input type="checkbox" id="severities_2_#{uniqid}" name="severities[2]" value="2" class="checkbox-radio"><label for="severities_2_#{uniqid}"><span></span>Warning</label></li><li><input type="checkbox" id="severities_3_#{uniqid}" name="severities[3]" value="3" class="checkbox-radio"><label for="severities_3_#{uniqid}"><span></span>Average</label></li><li><input type="checkbox" id="severities_4_#{uniqid}" name="severities[4]" value="4" class="checkbox-radio"><label for="severities_4_#{uniqid}"><span></span>High</label></li><li><input type="checkbox" id="severities_5_#{uniqid}" name="severities[5]" value="5" class="checkbox-radio"><label for="severities_5_#{uniqid}"><span></span>Disaster</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="age_state_#{uniqid}">Age less than</label></div><div class="table-forms-td-right"><input type="checkbox" id="age_state_#{uniqid}" name="age_state" value="1" class="checkbox-radio" unchecked-value="0"><label for="age_state_#{uniqid}"><span></span></label><input type="text" name="age" value="14" maxlength="3" onchange="validateNumericBox(this, false, false);" style="width: 75px;" disabled="disabled"><div class="form-input-margin"></div>days</div></li><li><div class="table-forms-td-left"><label for="show_symptoms_#{uniqid}">Show symptoms</label></div><div class="table-forms-td-right"><input type="checkbox" id="show_symptoms_#{uniqid}" name="show_symptoms" value="1" class="checkbox-radio" unchecked-value="0"><label for="show_symptoms_#{uniqid}"><span></span></label></div></li><li><div class="table-forms-td-left"><label for="show_suppressed_#{uniqid}">Show suppressed problems</label></div><div class="table-forms-td-right"><input type="checkbox" id="show_suppressed_#{uniqid}" name="show_suppressed" value="1" class="checkbox-radio" unchecked-value="0"><label for="show_suppressed_#{uniqid}"><span></span></label></div></li><li><div class="table-forms-td-left"><label for="unacknowledged_#{uniqid}">Show unacknowledged only</label></div><div class="table-forms-td-right"><input type="checkbox" id="unacknowledged_#{uniqid}" name="unacknowledged" value="1" class="checkbox-radio" unchecked-value="0"><label for="unacknowledged_#{uniqid}"><span></span></label></div></li></ul></div><div class="cell"><ul class="table-forms"><li><div class="table-forms-td-left"><label>Host inventory</label></div><div class="table-forms-td-right"><table id="filter-inventory_#{uniqid}"><tbody><tr><td colspan="3"><button type="button" name="inventory_add" class="btn-link element-table-add">Add</button></td></tr></tbody></table></div></li><li><div class="table-forms-td-left"><label>Tags</label></div><div class="table-forms-td-right"><table id="filter-tags_#{uniqid}"><tbody><tr><td colspan="4"><ul id="evaltype_#{uniqid}" class="radio-list-control"><li><input type="radio" id="evaltype_0#{uniqid}" name="evaltype" value="0" checked="checked"><label for="evaltype_0#{uniqid}">And/Or</label></li><li><input type="radio" id="evaltype_2#{uniqid}" name="evaltype" value="2"><label for="evaltype_2#{uniqid}">Or</label></li></ul></td></tr><tr><td colspan="3"><button type="button" name="tags_add" class="btn-link element-table-add">Add</button></td></tr></tbody></table></div></li><li><div class="table-forms-td-left"><label>Show tags</label></div><div class="table-forms-td-right"><ul class="hor-list"><li><ul id="show_tags_#{uniqid}" class="radio-list-control"><li><input type="radio" id="show_tags_0#{uniqid}" name="show_tags" value="0"><label for="show_tags_0#{uniqid}">None</label></li><li><input type="radio" id="show_tags_1#{uniqid}" name="show_tags" value="1"><label for="show_tags_1#{uniqid}">1</label></li><li><input type="radio" id="show_tags_2#{uniqid}" name="show_tags" value="2"><label for="show_tags_2#{uniqid}">2</label></li><li><input type="radio" id="show_tags_3#{uniqid}" name="show_tags" value="3" checked="checked"><label for="show_tags_3#{uniqid}">3</label></li></ul></li><li><div class="form-input-margin"></div></li><li><label>Tag name</label></li><li><ul id="tag_name_format_#{uniqid}" class="radio-list-control"><li><input type="radio" id="tag_name_format_0#{uniqid}" name="tag_name_format" value="0" checked="checked"><label for="tag_name_format_0#{uniqid}">Full</label></li><li><input type="radio" id="tag_name_format_1#{uniqid}" name="tag_name_format" value="1"><label for="tag_name_format_1#{uniqid}">Shortened</label></li><li><input type="radio" id="tag_name_format_2#{uniqid}" name="tag_name_format" value="2"><label for="tag_name_format_2#{uniqid}">None</label></li></ul></li></ul></div></li><li><div class="table-forms-td-left"><label for="tag_priority_#{uniqid}">Tag display priority</label></div><div class="table-forms-td-right"><input type="text" id="tag_priority_#{uniqid}" name="tag_priority" value="" maxlength="255" style="width: 300px;" placeholder="comma-separated list"></div></li><li><div class="table-forms-td-left"><label>Show operational data</label></div><div class="table-forms-td-right"><ul class="radio-list-control"><li><input type="radio" id="show_opdata_0_#{uniqid}" name="show_opdata" value="0" checked="checked"><label for="show_opdata_0_#{uniqid}">None</label></li><li><input type="radio" id="show_opdata_1_#{uniqid}" name="show_opdata" value="1"><label for="show_opdata_1_#{uniqid}">Separately</label></li><li><input type="radio" id="show_opdata_2_#{uniqid}" name="show_opdata" value="2"><label for="show_opdata_2_#{uniqid}">With problem name</label></li></ul></div></li><li><div class="table-forms-td-left"><label for="compact_view_#{uniqid}">Compact view</label></div><div class="table-forms-td-right"><input type="checkbox" id="compact_view_#{uniqid}" name="compact_view" value="1" class="checkbox-radio" unchecked-value="0"><label for="compact_view_#{uniqid}"><span></span></label><div class="table-forms-second-column"><label for="show_timeline_#{uniqid}" class="second-column-label">Show timeline</label><input type="checkbox" id="show_timeline_#{uniqid}" name="show_timeline" value="1" class="checkbox-radio" checked="checked" unchecked-value="0"><label for="show_timeline_#{uniqid}"><span></span></label></div></div></li><li><div class="table-forms-td-left"><label for="details_#{uniqid}">Show details</label></div><div class="table-forms-td-right"><input type="checkbox" id="details_#{uniqid}" name="details" value="1" class="checkbox-radio" unchecked-value="0"><label for="details_#{uniqid}"><span></span></label><div class="filter-highlight-row-cb table-forms-second-column"><label for="highlight_row_#{uniqid}" class="second-column-label">Highlight whole row</label><input type="checkbox" id="highlight_row_#{uniqid}" name="highlight_row" value="1" class="checkbox-radio" disabled="disabled" unchecked-value="0"><label for="highlight_row_#{uniqid}"><span></span></label></div></div></li></ul></div></div><button type="submit" class="form-submit-hidden"></button><input type="hidden" name="filter_name" value="#{filter_name}"><input type="hidden" name="filter_show_counter" value="#{filter_show_counter}"><input type="hidden" name="filter_custom_time" value="#{filter_custom_time}"><input type="hidden" name="sort" value="#{sort}"><input type="hidden" name="sortorder" value="#{sortorder}"></form></template><template id="filter-inventory-row"><tr class="form_row"><td><z-select name="inventory[#{rowNum}][field]" data-options="[{&quot;value&quot;:&quot;type&quot;,&quot;label&quot;:&quot;Type&quot;},{&quot;value&quot;:&quot;type_full&quot;,&quot;label&quot;:&quot;Type (Full details)&quot;},{&quot;value&quot;:&quot;name&quot;,&quot;label&quot;:&quot;Name&quot;},{&quot;value&quot;:&quot;alias&quot;,&quot;label&quot;:&quot;Alias&quot;},{&quot;value&quot;:&quot;os&quot;,&quot;label&quot;:&quot;OS&quot;},{&quot;value&quot;:&quot;os_full&quot;,&quot;label&quot;:&quot;OS (Full details)&quot;},{&quot;value&quot;:&quot;os_short&quot;,&quot;label&quot;:&quot;OS (Short)&quot;},{&quot;value&quot;:&quot;serialno_a&quot;,&quot;label&quot;:&quot;Serial number A&quot;},{&quot;value&quot;:&quot;serialno_b&quot;,&quot;label&quot;:&quot;Serial number B&quot;},{&quot;value&quot;:&quot;tag&quot;,&quot;label&quot;:&quot;Tag&quot;},{&quot;value&quot;:&quot;asset_tag&quot;,&quot;label&quot;:&quot;Asset tag&quot;},{&quot;value&quot;:&quot;macaddress_a&quot;,&quot;label&quot;:&quot;MAC address A&quot;},{&quot;value&quot;:&quot;macaddress_b&quot;,&quot;label&quot;:&quot;MAC address B&quot;},{&quot;value&quot;:&quot;hardware&quot;,&quot;label&quot;:&quot;Hardware&quot;},{&quot;value&quot;:&quot;hardware_full&quot;,&quot;label&quot;:&quot;Hardware (Full details)&quot;},{&quot;value&quot;:&quot;software&quot;,&quot;label&quot;:&quot;Software&quot;},{&quot;value&quot;:&quot;software_full&quot;,&quot;label&quot;:&quot;Software (Full details)&quot;},{&quot;value&quot;:&quot;software_app_a&quot;,&quot;label&quot;:&quot;Software application A&quot;},{&quot;value&quot;:&quot;software_app_b&quot;,&quot;label&quot;:&quot;Software application B&quot;},{&quot;value&quot;:&quot;software_app_c&quot;,&quot;label&quot;:&quot;Software application C&quot;},{&quot;value&quot;:&quot;software_app_d&quot;,&quot;label&quot;:&quot;Software application D&quot;},{&quot;value&quot;:&quot;software_app_e&quot;,&quot;label&quot;:&quot;Software application E&quot;},{&quot;value&quot;:&quot;contact&quot;,&quot;label&quot;:&quot;Contact&quot;},{&quot;value&quot;:&quot;location&quot;,&quot;label&quot;:&quot;Location&quot;},{&quot;value&quot;:&quot;location_lat&quot;,&quot;label&quot;:&quot;Location latitude&quot;},{&quot;value&quot;:&quot;location_lon&quot;,&quot;label&quot;:&quot;Location longitude&quot;},{&quot;value&quot;:&quot;notes&quot;,&quot;label&quot;:&quot;Notes&quot;},{&quot;value&quot;:&quot;chassis&quot;,&quot;label&quot;:&quot;Chassis&quot;},{&quot;value&quot;:&quot;model&quot;,&quot;label&quot;:&quot;Model&quot;},{&quot;value&quot;:&quot;hw_arch&quot;,&quot;label&quot;:&quot;HW architecture&quot;},{&quot;value&quot;:&quot;vendor&quot;,&quot;label&quot;:&quot;Vendor&quot;},{&quot;value&quot;:&quot;contract_number&quot;,&quot;label&quot;:&quot;Contract number&quot;},{&quot;value&quot;:&quot;installer_name&quot;,&quot;label&quot;:&quot;Installer name&quot;},{&quot;value&quot;:&quot;deployment_status&quot;,&quot;label&quot;:&quot;Deployment status&quot;},{&quot;value&quot;:&quot;url_a&quot;,&quot;label&quot;:&quot;URL A&quot;},{&quot;value&quot;:&quot;url_b&quot;,&quot;label&quot;:&quot;URL B&quot;},{&quot;value&quot;:&quot;url_c&quot;,&quot;label&quot;:&quot;URL C&quot;},{&quot;value&quot;:&quot;host_networks&quot;,&quot;label&quot;:&quot;Host networks&quot;},{&quot;value&quot;:&quot;host_netmask&quot;,&quot;label&quot;:&quot;Host subnet mask&quot;},{&quot;value&quot;:&quot;host_router&quot;,&quot;label&quot;:&quot;Host router&quot;},{&quot;value&quot;:&quot;oob_ip&quot;,&quot;label&quot;:&quot;OOB IP address&quot;},{&quot;value&quot;:&quot;oob_netmask&quot;,&quot;label&quot;:&quot;OOB subnet mask&quot;},{&quot;value&quot;:&quot;oob_router&quot;,&quot;label&quot;:&quot;OOB router&quot;},{&quot;value&quot;:&quot;date_hw_purchase&quot;,&quot;label&quot;:&quot;Date HW purchased&quot;},{&quot;value&quot;:&quot;date_hw_install&quot;,&quot;label&quot;:&quot;Date HW installed&quot;},{&quot;value&quot;:&quot;date_hw_expiry&quot;,&quot;label&quot;:&quot;Date HW maintenance expires&quot;},{&quot;value&quot;:&quot;date_hw_decomm&quot;,&quot;label&quot;:&quot;Date HW decommissioned&quot;},{&quot;value&quot;:&quot;site_address_a&quot;,&quot;label&quot;:&quot;Site address A&quot;},{&quot;value&quot;:&quot;site_address_b&quot;,&quot;label&quot;:&quot;Site address B&quot;},{&quot;value&quot;:&quot;site_address_c&quot;,&quot;label&quot;:&quot;Site address C&quot;},{&quot;value&quot;:&quot;site_city&quot;,&quot;label&quot;:&quot;Site city&quot;},{&quot;value&quot;:&quot;site_state&quot;,&quot;label&quot;:&quot;Site state \/ province&quot;},{&quot;value&quot;:&quot;site_country&quot;,&quot;label&quot;:&quot;Site country&quot;},{&quot;value&quot;:&quot;site_zip&quot;,&quot;label&quot;:&quot;Site ZIP \/ postal&quot;},{&quot;value&quot;:&quot;site_rack&quot;,&quot;label&quot;:&quot;Site rack location&quot;},{&quot;value&quot;:&quot;site_notes&quot;,&quot;label&quot;:&quot;Site notes&quot;},{&quot;value&quot;:&quot;poc_1_name&quot;,&quot;label&quot;:&quot;Primary POC name&quot;},{&quot;value&quot;:&quot;poc_1_email&quot;,&quot;label&quot;:&quot;Primary POC email&quot;},{&quot;value&quot;:&quot;poc_1_phone_a&quot;,&quot;label&quot;:&quot;Primary POC phone A&quot;},{&quot;value&quot;:&quot;poc_1_phone_b&quot;,&quot;label&quot;:&quot;Primary POC phone B&quot;},{&quot;value&quot;:&quot;poc_1_cell&quot;,&quot;label&quot;:&quot;Primary POC cell&quot;},{&quot;value&quot;:&quot;poc_1_screen&quot;,&quot;label&quot;:&quot;Primary POC screen name&quot;},{&quot;value&quot;:&quot;poc_1_notes&quot;,&quot;label&quot;:&quot;Primary POC notes&quot;},{&quot;value&quot;:&quot;poc_2_name&quot;,&quot;label&quot;:&quot;Secondary POC name&quot;},{&quot;value&quot;:&quot;poc_2_email&quot;,&quot;label&quot;:&quot;Secondary POC email&quot;},{&quot;value&quot;:&quot;poc_2_phone_a&quot;,&quot;label&quot;:&quot;Secondary POC phone A&quot;},{&quot;value&quot;:&quot;poc_2_phone_b&quot;,&quot;label&quot;:&quot;Secondary POC phone B&quot;},{&quot;value&quot;:&quot;poc_2_cell&quot;,&quot;label&quot;:&quot;Secondary POC cell&quot;},{&quot;value&quot;:&quot;poc_2_screen&quot;,&quot;label&quot;:&quot;Secondary POC screen name&quot;},{&quot;value&quot;:&quot;poc_2_notes&quot;,&quot;label&quot;:&quot;Secondary POC notes&quot;}]" tabindex="-1"></z-select></td><td><input type="text" name="inventory[#{rowNum}][value]" value="#{value}" maxlength="255" style="width: 150px;"></td><td class="nowrap"><button type="button" name="inventory[#{rowNum}][remove]" class="btn-link element-table-remove">Remove</button></td></tr></template><template id="filter-tag-row-tmpl"><tr class="form_row"><td><input type="text" name="tags[#{rowNum}][tag]" value="#{tag}" maxlength="255" placeholder="tag" style="width: 150px;"></td><td><z-select value="0" focusable-element-id="tags-#{rowNum}#{uniqid}-operator-select" id="tags_#{rowNum}#{uniqid}_operator" name="tags[#{rowNum}][operator]" data-options="[{&quot;value&quot;:4,&quot;label&quot;:&quot;Exists&quot;},{&quot;value&quot;:1,&quot;label&quot;:&quot;Equals&quot;},{&quot;value&quot;:0,&quot;label&quot;:&quot;Contains&quot;},{&quot;value&quot;:5,&quot;label&quot;:&quot;Does not exist&quot;},{&quot;value&quot;:3,&quot;label&quot;:&quot;Does not equal&quot;},{&quot;value&quot;:2,&quot;label&quot;:&quot;Does not contain&quot;}]" tabindex="-1"></z-select></td><td><input type="text" id="tags_#{rowNum}#{uniqid}_value" name="tags[#{rowNum}][value]" value="#{value}" maxlength="255" placeholder="value" style="width: 150px;"></td><td class="nowrap"><button type="button" name="tags[#{rowNum}][remove]" class="btn-link element-table-remove">Remove</button></td></tr></template><script type="text/javascript">
+	let template = document.querySelector('[data-template="monitoring.problem.filter"]');
+
+	function render(data, container) {
+		// "Save as" can contain only home tab, also home tab cannot contain "Update" button.
+		$('[name="filter_new"],[name="filter_update"]').hide()
+			.filter(data.filter_configurable ? '[name="filter_update"]' : '[name="filter_new"]').show();
+
+		let fields = ['show', 'name', 'tag_priority', 'show_opdata', 'show_symptoms', 'show_suppressed', 'show_tags',
+				'unacknowledged', 'compact_view', 'show_timeline', 'details', 'highlight_row', 'age_state', 'age',
+				'tag_name_format', 'evaltype'
+			],
+			eventHandler = {
+				show: () => {
+					// Dynamically disable hidden input elements to allow correct detection of unsaved changes.
+					var	filter_show = ($('input[name="show"]:checked', container).val() != 2),
+						filter_custom_time = $('[name="filter_custom_time"]', container).val(),
+						disabled = (!filter_show || !$('[name="age_state"]:checked', container).length);
+
+					$('[name="age"]', container).attr('disabled', disabled).closest('li').toggle(filter_show);
+					$('[name="age_state"]', container).attr('disabled', !filter_show);
+
+					if (!filter_show && filter_custom_time == 1) {
+						$('[name="show"]', container)
+							.prop('checked', false)
+							.attr('disabled', 'disabled')
+							.filter('[value="2"]')
+							.prop('checked', true)
+							.removeAttr('disabled');
+						this.setUrlArgument('show', 2);
+					}
+					else {
+						$('[name="show"]', container).removeAttr('disabled');
+					}
+
+					if (this._parent) {
+						this._parent.updateTimeselector(this, filter_show || (filter_custom_time == 1));
+					}
+				},
+				age_state: (ev) => {
+					$('[name="age"]', container).prop('disabled', !$('[name="age_state"]', container).is(':checked'));
+				},
+				compact_view: () => {
+					let checked = $('[name="compact_view"]', container).is(':checked');
+
+					$('[name="show_timeline"]', container).prop('disabled', checked);
+					$('[name="details"]', container).prop('disabled', checked);
+					$('[name="show_opdata"]', container).prop('disabled', checked);
+					$('[name="highlight_row"]', container).prop('disabled', !checked);
+				},
+				show_tags: () => {
+					let disabled = ($('[name="show_tags"]:checked', container).val() == 0);
+
+					$('[name="tag_priority"]', container).prop('disabled', disabled);
+					$('[name="tag_name_format"]', container).prop('disabled', disabled);
+				}
+			};
+
+		// Input, radio and single checkboxes.
+		fields.forEach((key) => {
+			var elm = $('[name="' + key + '"]', container);
+
+			if (elm.is(':radio,:checkbox')) {
+				elm.filter('[value="' + data[key] + '"]').attr('checked', true);
+			}
+			else {
+				elm.val(data[key]);
+			}
+		});
+
+		// Show timeline default value is checked and it will be rendered in template therefore initialize if unchecked.
+		$('[name="show_timeline"][unchecked-value="' + data['show_timeline'] + '"]', container).removeAttr('checked');
+
+		// Severities checkboxes.
+		for (const value in data.severities) {
+			$('[name="severities[' + value + ']"]', container).attr('checked', true);
+		}
+
+		// Inventory table.
+		if (data.inventory.length == 0) {
+			data.inventory.push({'field': '', 'value': ''});
+		}
+		$('#filter-inventory_' + data.uniqid, container).dynamicRows({
+			template: '#filter-inventory-row',
+			rows: data.inventory,
+			counter: 0
+		});
+
+		// Tags table.
+		if (data.tags.length == 0) {
+			data.tags.push({'tag': '', 'value': '', 'operator': 0});
+		}
+
+		$('#filter-tags_' + data.uniqid, container)
+			.dynamicRows({
+				template: '#filter-tag-row-tmpl',
+				rows: data.tags,
+				counter: 0,
+				dataCallback: (tag) => {
+					tag.uniqid = data.uniqid
+					return tag;
+				}
+			})
+			.on('afteradd.dynamicRows', function() {
+				var rows = this.querySelectorAll('.form_row');
+				new CTagFilterItem(rows[rows.length - 1]);
+			});
+
+		// Init existing fields once loaded.
+		document.querySelectorAll('#filter-tags_' + data.uniqid + ' .form_row').forEach(row => {
+			new CTagFilterItem(row);
+		});
+
+		// Host groups multiselect.
+		$('#groupids_' + data.uniqid, container).multiSelectHelper({
+			id: 'groupids_' + data.uniqid,
+			object_name: 'hostGroup',
+			name: 'groupids[]',
+			data: data.filter_view_data.groups || [],
+			objectOptions: {
+				with_hosts: 1,
+				enrich_parent_groups: 1
+			},
+			popup: {
+				parameters: {
+					srctbl: 'host_groups',
+					srcfld1: 'groupid',
+					dstfrm: 'zbx_filter',
+					dstfld1: 'groupids_' + data.uniqid,
+					multiselect: 1,
+					real_hosts: 1,
+					enrich_parent_groups: 1
+				}
+			}
+		});
+
+		// Hosts multiselect.
+		$('#hostids_' + data.uniqid, container).multiSelectHelper({
+			id: 'hostids_' + data.uniqid,
+			object_name: 'hosts',
+			name: 'hostids[]',
+			data: data.filter_view_data.hosts || [],
+			popup: {
+				filter_preselect: {
+					id: 'groupids_' + data.uniqid,
+					submit_as: 'groupid'
+				},
+				parameters: {
+					multiselect: 1,
+					srctbl: 'hosts',
+					srcfld1: 'hostid',
+					dstfrm: 'zbx_filter',
+					dstfld1: 'hostids_' + data.uniqid,
+				}
+			}
+		});
+
+		// Triggers multiselect.
+		$('#triggerids_' + data.uniqid, container).multiSelectHelper({
+			id: 'triggerids_' + data.uniqid,
+			object_name: 'triggers',
+			name: 'triggerids[]',
+			data: data.filter_view_data.triggers || [],
+			popup: {
+				filter_preselect: {
+					id: 'hostids_' + data.uniqid,
+					submit_as: 'hostid'
+				},
+				parameters: {
+					srctbl: 'triggers',
+					srcfld1: 'triggerid',
+					dstfrm: 'zbx_filter',
+					dstfld1: 'triggerids_' + data.uniqid,
+					multiselect: 1,
+					monitored_hosts: 1,
+					with_monitored_triggers: 1
+				}
+			}
+		});
+
+		$('#show_' + data.uniqid, container).change(eventHandler.show).trigger('change');
+		$('[name="age_state"]').change(eventHandler.age_state).trigger('change');
+		$('[name="compact_view"]', container).change(eventHandler.compact_view).trigger('change');
+		$('[name="show_tags"]', container).change(eventHandler.show_tags).trigger('change');
+
+		// Initialize src_url.
+		this.resetUnsavedState();
+		this.on(TABFILTERITEM_EVENT_ACTION, update.bind(this));
+
+		if (this._parent) {
+			this._parent.on(TABFILTER_EVENT_UPDATE, (ev) => {
+				let form = this.getForm(),
+					tabfilter = ev.detail.target;
+
+				if (ev.detail.filter_property !== 'properties' || tabfilter._active_item !== this) {
+					return;
+				}
+
+				if ($(form).find('[name="filter_custom_time"]').val() == 1) {
+					$('[name="show"][value="2"]', form).prop('checked', true);
+					$('#show_' + this._data.uniqid, form).trigger('change');
+					this.setUrlArgument('show', 2);
+					this.updateUnsavedState();
+					this.setBrowserLocationToApplyUrl();
+				}
+			});
+
+			this._parent.on(TABFILTER_EVENT_NEWITEM, () => {
+				let form = this.getForm();
+
+				if ($(form).find('[name="filter_custom_time"]').val() == 1) {
+					$('[name="show"][value="2"]', form).prop('checked', true);
+				}
+			});
+		}
+	}
+
+	function expand(data, container) {
+		// "Save as" can contain only home tab, also home tab cannot contain "Update" button.
+		$('[name="filter_new"],[name="filter_update"]').hide()
+			.filter(data.filter_configurable ? '[name="filter_update"]' : '[name="filter_new"]').show();
+
+		// Trigger change to update timeselector ui disabled state.
+		$('#show_' + data.uniqid, container).trigger('change');
+	}
+
+	function select(data, container) {
+		if (this._template_rendered) {
+			// Template rendered, use element events, trigger change to update timeselector ui disabled state.
+			$('#show_' + data.uniqid, container).trigger('change');
+		}
+		else if (this._parent) {
+			// Template is not rendered, use input data.
+			this._parent.updateTimeselector(this, (data.show != 2));
+		}
+	}
+
+	/**
+	 * On filter apply or update buttons press update disabled UI fields.
+	 *
+	 * @param {CustomEvent} ev    CustomEvent object.
+	 */
+	function update(ev) {
+		let action = ev.detail.action,
+			container = this._content_container;
+
+		if (action !== 'filter_apply' && action !== 'filter_update') {
+			return;
+		}
+
+		$('[name="highlight_row"],[name="details"],[name="show_timeline"]', container)
+			.filter(':disabled')
+			.prop('checked', false);
+
+		$('[name="show_opdata"]:disabled', container)
+			.prop('checked', false)
+			.filter('[value="' + 0 +'"]')
+			.prop('checked', true);
+
+		if ($('[name="age_state"]', container).not(':checked').length) {
+			$('[name="age"]').val(14);
+		}
+	}
+
+	// Tab filter item events handlers.
+	template.addEventListener(TABFILTERITEM_EVENT_RENDER, function(ev) {
+		render.call(ev.detail, ev.detail._data, ev.detail._content_container);
+	});
+	template.addEventListener(TABFILTERITEM_EVENT_EXPAND, function(ev) {
+		expand.call(ev.detail, ev.detail._data, ev.detail._content_container);
+	});
+	template.addEventListener(TABFILTERITEM_EVENT_SELECT, function(ev) {
+		select.call(ev.detail, ev.detail._data, ev.detail._content_container);
+	});
+</script>
+</div><div class="flickerfreescreen" data-timestamp="1781942504" id="flickerfreescreen_problem"><form method="post" action="zabbix.php" accept-charset="utf-8" id="problem_form" name="problem"><table class="list-table" id="t6a3648e87c064849427027"><thead><tr><th class="cell-width"><input type="checkbox" id="all_eventids" name="all_eventids" value="1" class="checkbox-radio" onclick="checkAll(&#039;problem&#039;, &#039;all_eventids&#039;, &#039;eventids&#039;);"><label for="all_eventids"><span></span></label></th><th class="cell-width right"><a href="zabbix.php?action=problem.view&amp;sort=clock&amp;sortorder=ASC&amp;show=1&amp;groupids%5B0%5D=103&amp;name=&amp;evaltype=0&amp;show_tags=3&amp;tag_name_format=0&amp;tag_priority=&amp;show_symptoms=0&amp;show_suppressed=0&amp;unacknowledged=0&amp;compact_view=0&amp;show_timeline=1&amp;details=0&amp;highlight_row=0&amp;show_opdata=0&amp;age_state=0&amp;age=14">Time<span class="arrow-down"></span></a></th><th class="timeline-th"></th><th class="timeline-th"></th><th><a href="zabbix.php?action=problem.view&amp;sort=severity&amp;sortorder=ASC&amp;show=1&amp;groupids%5B0%5D=103&amp;name=&amp;evaltype=0&amp;show_tags=3&amp;tag_name_format=0&amp;tag_priority=&amp;show_symptoms=0&amp;show_suppressed=0&amp;unacknowledged=0&amp;compact_view=0&amp;show_timeline=1&amp;details=0&amp;highlight_row=0&amp;show_opdata=0&amp;age_state=0&amp;age=14">Severity</a></th><th class="cell-width">Recovery time</th><th>Status</th><th>Info</th><th><a href="zabbix.php?action=problem.view&amp;sort=host&amp;sortorder=ASC&amp;show=1&amp;groupids%5B0%5D=103&amp;name=&amp;evaltype=0&amp;show_tags=3&amp;tag_name_format=0&amp;tag_priority=&amp;show_symptoms=0&amp;show_suppressed=0&amp;unacknowledged=0&amp;compact_view=0&amp;show_timeline=1&amp;details=0&amp;highlight_row=0&amp;show_opdata=0&amp;age_state=0&amp;age=14">Host</a></th><th><a href="zabbix.php?action=problem.view&amp;sort=name&amp;sortorder=ASC&amp;show=1&amp;groupids%5B0%5D=103&amp;name=&amp;evaltype=0&amp;show_tags=3&amp;tag_name_format=0&amp;tag_priority=&amp;show_symptoms=0&amp;show_suppressed=0&amp;unacknowledged=0&amp;compact_view=0&amp;show_timeline=1&amp;details=0&amp;highlight_row=0&amp;show_opdata=0&amp;age_state=0&amp;age=14">Problem</a></th><th>Duration</th><th>Update</th><th>Actions</th><th>Tags</th></tr></thead><tbody><tr><td class="problem-expand-td"><input type="checkbox" id="eventids_14661310" name="eventids[14661310]" value="14661310" class="checkbox-radio"><label for="eventids_14661310"><span></span></label></td><td class="timeline-date"><a href="tr_events.php?triggerid=42584&amp;eventid=14661310">13:26:59</a></td><td class="timeline-axis timeline-dot"></td><td class="timeline-td"></td><td class="warning-bg">Warning</td><td></td><td><span class="problem-unack-fg">PROBLEM</span></td><td></td><td><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;host&quot;,&quot;data&quot;:{&quot;hostid&quot;:&quot;14528&quot;}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">156553EPD17727-RO-BAN-GPCL-11 GNFC 10MW  Charanka</a></td><td><a class="icon-depend-down cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bb92381367856"><thead><tr><th>Depends on</th></tr></thead><tbody><tr><td>Unavailable by ICMP ping</td></tr></tbody></table></div><a class="icon-depend-up cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bbab272179920"><thead><tr><th>Dependent</th></tr></thead><tbody><tr><td>High ICMP ping response time</td></tr></tbody></table></div><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;trigger&quot;,&quot;data&quot;:{&quot;triggerid&quot;:&quot;42584&quot;,&quot;backurl&quot;:&quot;zabbix.php?action=problem.view&quot;,&quot;eventid&quot;:&quot;14661310&quot;,&quot;show_rank_change_cause&quot;:1,&quot;show_rank_change_symptom&quot;:1}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">High ICMP ping loss</a></td><td>4m 45s</td><td><a class="link-alt" data-eventid="14661310" onclick="acknowledgePopUp({eventids: [this.dataset.eventid]}, this);" role="button" href="javascript:void(0)">Update</a></td><td></td><td><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><button type="button" class="icon-wizard-action" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1"></button><div class="hint-box" style="display: none;"><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: availability</span><div class="hint-box" style="display: none;">scope: availability</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: performance</span><div class="hint-box" style="display: none;">scope: performance</div></div></td></tr><tr class="hover-nobg"><td class="timeline-date" colspan="2"><h4>13:00</h4></td><td class="timeline-axis timeline-dot-big"></td><td class="timeline-td"></td><td colspan="10"></td></tr><tr><td class="problem-expand-td"><input type="checkbox" id="eventids_14660265" name="eventids[14660265]" value="14660265" class="checkbox-radio"><label for="eventids_14660265"><span></span></label></td><td class="timeline-date"><a href="tr_events.php?triggerid=42613&amp;eventid=14660265">10:27:06</a></td><td class="timeline-axis timeline-dot"></td><td class="timeline-td"></td><td class="high-bg">High</td><td></td><td><span class="problem-unack-fg">PROBLEM</span></td><td></td><td><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;host&quot;,&quot;data&quot;:{&quot;hostid&quot;:&quot;14535&quot;}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">156553EPD17734-RO-BAN-GPCL-18 GIPCL 40MW PLOT NO1  Charanka</a></td><td><a class="icon-depend-down cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bc9e985749173"><thead><tr><th>Depends on</th></tr></thead><tbody><tr><td>Unavailable by ICMP ping Since 24 Hours</td></tr></tbody></table></div><a class="icon-depend-up cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bcb1690794651"><thead><tr><th>Dependent</th></tr></thead><tbody><tr><td>High ICMP ping loss</td></tr><tr><td>High ICMP ping response time</td></tr></tbody></table></div><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;trigger&quot;,&quot;data&quot;:{&quot;triggerid&quot;:&quot;42613&quot;,&quot;backurl&quot;:&quot;zabbix.php?action=problem.view&quot;,&quot;eventid&quot;:&quot;14660265&quot;,&quot;show_rank_change_cause&quot;:1,&quot;show_rank_change_symptom&quot;:1}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">Unavailable by ICMP ping</a><a class="icon-description" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;">Last three attempts returned timeout.  Please check device connectivity.</div></td><td>3h 4m 38s</td><td><a class="link-alt" data-eventid="14660265" onclick="acknowledgePopUp({eventids: [this.dataset.eventid]}, this);" role="button" href="javascript:void(0)">Update</a></td><td></td><td><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><button type="button" class="icon-wizard-action" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1"></button><div class="hint-box" style="display: none;"><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: availability</span><div class="hint-box" style="display: none;">scope: availability</div></div></td></tr><tr class="hover-nobg"><td class="timeline-date" colspan="2"><h4>10:00</h4></td><td class="timeline-axis timeline-dot-big"></td><td class="timeline-td"></td><td colspan="10"></td></tr><tr><td class="problem-expand-td"><input type="checkbox" id="eventids_14660107" name="eventids[14660107]" value="14660107" class="checkbox-radio"><label for="eventids_14660107"><span></span></label></td><td class="timeline-date"><a href="tr_events.php?triggerid=42670&amp;eventid=14660107">09:47:20</a></td><td class="timeline-axis timeline-dot"></td><td class="timeline-td"></td><td class="disaster-bg">Disaster</td><td></td><td><span class="problem-unack-fg">PROBLEM</span></td><td></td><td><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;host&quot;,&quot;data&quot;:{&quot;hostid&quot;:&quot;14549&quot;}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">156553EPD17749-RO-BAN-GPCL-33 SUN CLEAN POWER Charanka</a></td><td><a class="icon-depend-up cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bdac952083405"><thead><tr><th>Dependent</th></tr></thead><tbody><tr><td>Unavailable by ICMP ping</td></tr></tbody></table></div><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;trigger&quot;,&quot;data&quot;:{&quot;triggerid&quot;:&quot;42670&quot;,&quot;backurl&quot;:&quot;zabbix.php?action=problem.view&quot;,&quot;eventid&quot;:&quot;14660107&quot;,&quot;show_rank_change_cause&quot;:1,&quot;show_rank_change_symptom&quot;:1}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">Unavailable by ICMP ping Since 24 Hours</a><a class="icon-description" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;">Last three attempts returned timeout.  Please check device connectivity.</div></td><td>3h 44m 24s</td><td><a class="link-alt" data-eventid="14660107" onclick="acknowledgePopUp({eventids: [this.dataset.eventid]}, this);" role="button" href="javascript:void(0)">Update</a></td><td></td><td><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><button type="button" class="icon-wizard-action" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1"></button><div class="hint-box" style="display: none;"><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: availability</span><div class="hint-box" style="display: none;">scope: availability</div></div></td></tr><tr class="hover-nobg"><td class="timeline-date" colspan="2"><h4>Today</h4></td><td class="timeline-axis timeline-dot-big"></td><td class="timeline-td"></td><td colspan="10"></td></tr><tr><td class="problem-expand-td"><input type="checkbox" id="eventids_14657856" name="eventids[14657856]" value="14657856" class="checkbox-radio"><label for="eventids_14657856"><span></span></label></td><td class="timeline-date"><a href="tr_events.php?triggerid=42593&amp;eventid=14657856">2026-06-19 17:47:01</a></td><td class="timeline-axis timeline-dot"></td><td class="timeline-td"></td><td class="high-bg">High</td><td></td><td><span class="problem-unack-fg">PROBLEM</span></td><td></td><td><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;host&quot;,&quot;data&quot;:{&quot;hostid&quot;:&quot;14530&quot;}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">156553EPD17729-RO-BAN-GPCL-13 WTP SOLAR  Charanka</a></td><td><a class="icon-depend-down cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87be7f324472431"><thead><tr><th>Depends on</th></tr></thead><tbody><tr><td>Unavailable by ICMP ping Since 24 Hours</td></tr></tbody></table></div><a class="icon-depend-up cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87be91301235372"><thead><tr><th>Dependent</th></tr></thead><tbody><tr><td>High ICMP ping loss</td></tr><tr><td>High ICMP ping response time</td></tr></tbody></table></div><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;trigger&quot;,&quot;data&quot;:{&quot;triggerid&quot;:&quot;42593&quot;,&quot;backurl&quot;:&quot;zabbix.php?action=problem.view&quot;,&quot;eventid&quot;:&quot;14657856&quot;,&quot;show_rank_change_cause&quot;:1,&quot;show_rank_change_symptom&quot;:1}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">Unavailable by ICMP ping</a><a class="icon-description" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;">Last three attempts returned timeout.  Please check device connectivity.</div></td><td>19h 44m 43s</td><td><a class="link-alt" data-eventid="14657856" onclick="acknowledgePopUp({eventids: [this.dataset.eventid]}, this);" role="button" href="javascript:void(0)">Update</a></td><td></td><td><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><button type="button" class="icon-wizard-action" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1"></button><div class="hint-box" style="display: none;"><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: availability</span><div class="hint-box" style="display: none;">scope: availability</div></div></td></tr><tr><td class="problem-expand-td"><input type="checkbox" id="eventids_14657284" name="eventids[14657284]" value="14657284" class="checkbox-radio"><label for="eventids_14657284"><span></span></label></td><td class="timeline-date"><a href="tr_events.php?triggerid=42634&amp;eventid=14657284">2026-06-19 14:37:11</a></td><td class="timeline-axis timeline-dot"></td><td class="timeline-td"></td><td class="disaster-bg">Disaster</td><td></td><td><span class="problem-unack-fg">PROBLEM</span></td><td></td><td><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;host&quot;,&quot;data&quot;:{&quot;hostid&quot;:&quot;14540&quot;}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">156553EPD17739-RO-BAN-GPCL-23 EMAMI 10MW Charanka</a></td><td><a class="icon-depend-up cursor-pointer" data-hintbox="1" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;"><table class="list-table" style="max-width: 453px;" id="t6a3648e87bf5e479137017"><thead><tr><th>Dependent</th></tr></thead><tbody><tr><td>Unavailable by ICMP ping</td></tr></tbody></table></div><a class="link-action wordbreak" data-menu-popup="{&quot;type&quot;:&quot;trigger&quot;,&quot;data&quot;:{&quot;triggerid&quot;:&quot;42634&quot;,&quot;backurl&quot;:&quot;zabbix.php?action=problem.view&quot;,&quot;eventid&quot;:&quot;14657284&quot;,&quot;show_rank_change_cause&quot;:1,&quot;show_rank_change_symptom&quot;:1}}" aria-expanded="false" aria-haspopup="true" role="button" href="javascript:void(0)">Unavailable by ICMP ping Since 24 Hours</a><a class="icon-description" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1" role="button" href="javascript:void(0)"></a><div class="hint-box" style="display: none;">Last three attempts returned timeout.  Please check device connectivity.</div></td><td>22h 54m 33s</td><td><a class="link-alt" data-eventid="14657284" onclick="acknowledgePopUp({eventids: [this.dataset.eventid]}, this);" role="button" href="javascript:void(0)">Update</a></td><td></td><td><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><button type="button" class="icon-wizard-action" data-hintbox="1" data-hintbox-class="hintbox-wrap" data-hintbox-static="1"></button><div class="hint-box" style="display: none;"><span class="tag" data-hintbox="1" data-hintbox-static="1">component: health</span><div class="hint-box" style="display: none;">component: health</div><span class="tag" data-hintbox="1" data-hintbox-static="1">component: network</span><div class="hint-box" style="display: none;">component: network</div><span class="tag" data-hintbox="1" data-hintbox-static="1">Host: {Host.Name}</span><div class="hint-box" style="display: none;">Host: {Host.Name}</div><span class="tag" data-hintbox="1" data-hintbox-static="1">scope: availability</span><div class="hint-box" style="display: none;">scope: availability</div></div></td></tr></tbody></table><div class="table-paging"><nav class="paging-btn-container" role="navigation" aria-label="Pager"><div class="table-stats">Displaying 5 of 5 found</div></nav></div><div id="action_buttons" class="action-buttons"><span id="selected_count" class="selected-item-count">0 selected</span><button type="submit" name="action" value="popup.acknowledge.edit" class="btn-alt" onclick="const form = this.closest(&quot;form&quot;);if (form.dataset.action) {
+							form.setAttribute(&quot;action&quot;, form.dataset.action);
+						}" data-disabled="">Mass update</button></div></form></div></main><script>jQuery(function($){
+		view.init({"filter_options":{"idx":"web.monitoring.problem","selected":0,"support_custom_time":1,"expanded":true,"page":null,"csrf_token":"5f3a1085421d751e75a1f78dd15a05bd9222fb104b52370467291c2f916d5372","timeselector":{"from":"2024-03-15 00:00:00","to":"2024-04-14 00:00:00","disabled":true,"can_zoomout":true,"can_decrement":true,"can_increment":true,"format":"Y-m-d H:i:s"},"data":[{"filter_name":"","from":"2024-03-15 00:00:00","to":"2024-04-14 00:00:00","show":1,"groupids":["103"],"hostids":[],"triggerids":[],"name":"","severities":[],"age_state":0,"age":14,"inventory":[],"evaltype":0,"tags":[],"show_tags":3,"show_symptoms":0,"show_suppressed":0,"unacknowledged":0,"compact_view":0,"show_timeline":1,"details":0,"highlight_row":0,"show_opdata":0,"tag_name_format":0,"tag_priority":"","page":null,"sort":"clock","sortorder":"DESC","filter_show_counter":0,"filter_custom_time":0,"filter_src":{"filter_name":"","groupids":["103"],"from":"now-1h","to":"now","show":1,"hostids":[],"triggerids":[],"name":"","severities":[],"age_state":0,"age":14,"inventory":[],"evaltype":0,"tags":[],"show_tags":3,"show_symptoms":0,"show_suppressed":0,"unacknowledged":0,"compact_view":0,"show_timeline":1,"details":0,"highlight_row":0,"show_opdata":0,"tag_name_format":0,"tag_priority":"","page":null,"sort":"clock","sortorder":"DESC","filter_show_counter":0,"filter_custom_time":0,"filter_view_data":{"groups":{"103":{"name":"CHARANKA","id":"103"}},"hosts":[],"triggers":[]}},"filter_view_data":{"groups":{"103":{"name":"CHARANKA","id":"103"}},"hosts":[],"triggers":[]},"tab_view":"monitoring.problem.filter","uniqid":0,"filter_sortable":false,"filter_configurable":false},{"groupids":["103"],"severities":{"2":"2","3":"3","4":"4","5":"5"},"filter_name":"Charanka","filter_show_counter":1,"from":"2024-03-15 00:00:00","to":"2024-04-14 00:00:00","show":1,"hostids":[],"triggerids":[],"name":"","age_state":0,"age":14,"inventory":[],"evaltype":0,"tags":[],"show_tags":3,"show_symptoms":0,"show_suppressed":0,"unacknowledged":0,"compact_view":0,"show_timeline":1,"details":0,"highlight_row":0,"show_opdata":0,"tag_name_format":0,"tag_priority":"","page":null,"sort":"clock","sortorder":"DESC","filter_custom_time":0,"filter_view_data":{"groups":{"103":{"name":"CHARANKA","id":"103"}},"hosts":[],"triggers":[]},"tab_view":"monitoring.problem.filter","uniqid":1,"filter_sortable":true,"filter_configurable":true}]},"refresh_url":"zabbix.php?filter_name=&from=2024-03-15+00%3A00%3A00&to=2024-04-14+00%3A00%3A00&show=1&groupids%5B0%5D=103&name=&age_state=0&age=14&evaltype=0&show_tags=3&show_symptoms=0&show_suppressed=0&unacknowledged=0&compact_view=0&show_timeline=1&details=0&highlight_row=0&show_opdata=0&tag_name_format=0&tag_priority=&sort=clock&sortorder=DESC&filter_show_counter=0&filter_custom_time=0&filter_src%5Bfilter_name%5D=&filter_src%5Bgroupids%5D%5B0%5D=103&filter_src%5Bfrom%5D=now-1h&filter_src%5Bto%5D=now&filter_src%5Bshow%5D=1&filter_src%5Bname%5D=&filter_src%5Bage_state%5D=0&filter_src%5Bage%5D=14&filter_src%5Bevaltype%5D=0&filter_src%5Bshow_tags%5D=3&filter_src%5Bshow_symptoms%5D=0&filter_src%5Bshow_suppressed%5D=0&filter_src%5Bunacknowledged%5D=0&filter_src%5Bcompact_view%5D=0&filter_src%5Bshow_timeline%5D=1&filter_src%5Bdetails%5D=0&filter_src%5Bhighlight_row%5D=0&filter_src%5Bshow_opdata%5D=0&filter_src%5Btag_name_format%5D=0&filter_src%5Btag_priority%5D=&filter_src%5Bsort%5D=clock&filter_src%5Bsortorder%5D=DESC&filter_src%5Bfilter_show_counter%5D=0&filter_src%5Bfilter_custom_time%5D=0&filter_src%5Bfilter_view_data%5D%5Bgroups%5D%5B103%5D%5Bname%5D=CHARANKA&filter_src%5Bfilter_view_data%5D%5Bgroups%5D%5B103%5D%5Bid%5D=103&filter_view_data%5Bgroups%5D%5B103%5D%5Bname%5D=CHARANKA&filter_view_data%5Bgroups%5D%5B103%5D%5Bid%5D=103&action=problem.view.refresh","refresh_interval":30000,"filter_defaults":{"from":"now-1h","to":"now","show":1,"groupids":[],"hostids":[],"triggerids":[],"name":"","severities":[],"age_state":0,"age":14,"inventory":[],"evaltype":0,"tags":[],"show_tags":3,"show_symptoms":0,"show_suppressed":0,"unacknowledged":0,"compact_view":0,"show_timeline":1,"details":0,"highlight_row":0,"show_opdata":0,"tag_name_format":0,"tag_priority":"","page":null,"sort":"clock","sortorder":"DESC","filter_name":"Untitled","filter_show_counter":0,"filter_custom_time":0}});
+	});</script><output id="msg-global-footer" class="msg-global-footer msg-warning"></output><footer role="contentinfo">Zabbix 6.4.6. &copy; 2001&ndash;2023, <a class="grey link-alt" target="_blank" rel="noopener noreferrer" href="https://www.zabbix.com/">Zabbix SIA</a></footer>
+<script type="text/javascript">
+	$(function() {
+		
+		// the chkbxRange.init() method must be called after the inserted post scripts and initializing cookies
+		cookie.init();
+		chkbxRange.init();
+	});
+
+	/**
+	 * Toggles filter state and updates title and icons accordingly.
+	 *
+	 * @param {string} 	idx					User profile index
+	 * @param {string} 	value				Value
+	 * @param {object} 	idx2				An array of IDs
+	 * @param {int} 	profile_type		Profile type
+	 */
+	function updateUserProfile(idx, value, idx2, profile_type = PROFILE_TYPE_INT) {
+		const value_fields = {
+			[PROFILE_TYPE_INT]: 'value_int',
+			[PROFILE_TYPE_STR]: 'value_str'
+		};
+
+		return sendAjaxData('zabbix.php?action=profile.update', {
+			data: {
+				idx: idx,
+				[value_fields[profile_type]]: value,
+				idx2: idx2,
+				_csrf_token: "bcb95b4410a749b38946b8226f475e36c5c61bd3f7732edcb57fe4eed5f904a2"			}
+		});
+	}
+
+	/**
+	 * Add object to the list of favorites.
+	 */
+	function add2favorites(object, objectid) {
+		sendAjaxData('zabbix.php?action=favorite.create', {
+			data: {
+				object: object,
+				objectid: objectid,
+				_csrf_token: "94c23361a04b868a517e65f4e82a47fce1745fabaae018b46e4de432af6c9668"			}
+		});
+	}
+
+	/**
+	 * Remove object from the list of favorites. Remove all favorites if objectid==0.
+	 */
+	function rm4favorites(object, objectid) {
+		sendAjaxData('zabbix.php?action=favorite.delete', {
+			data: {
+				object: object,
+				objectid: objectid,
+				_csrf_token: "94c23361a04b868a517e65f4e82a47fce1745fabaae018b46e4de432af6c9668"			}
+		});
+	}
+</script>
+<script type="text/javascript">
+jQuery("#groupids_").multiSelect({"url":"jsrpc.php?type=11&method=multiselect.get&object_name=hostGroup&with_hosts=1&enrich_parent_groups=1","name":"groupids[]","labels":{"No matches found":"No matches found","More matches found...":"More matches found...","type here to search":"type here to search","new":"new","Select":"Select"},"data":[],"popup":{"parameters":{"srctbl":"host_groups","srcfld1":"groupid","dstfrm":"zbx_filter","dstfld1":"groupids_","multiselect":"1","real_hosts":"1","enrich_parent_groups":"1"}}});
+jQuery("#hostids_").multiSelect({"url":"jsrpc.php?type=11&method=multiselect.get&object_name=hosts","name":"hostids[]","labels":{"No matches found":"No matches found","More matches found...":"More matches found...","type here to search":"type here to search","new":"new","Select":"Select"},"data":[],"popup":{"filter_preselect":{"id":"groupids_","submit_as":"groupid"},"parameters":{"srctbl":"hosts","srcfld1":"hostid","dstfrm":"zbx_filter","dstfld1":"hostids_","multiselect":"1"}}});
+jQuery("#triggerids_").multiSelect({"url":"jsrpc.php?type=11&method=multiselect.get&object_name=triggers&monitored=1","name":"triggerids[]","labels":{"No matches found":"No matches found","More matches found...":"More matches found...","type here to search":"type here to search","new":"new","Select":"Select"},"data":[],"popup":{"filter_preselect":{"id":"hostids_","submit_as":"hostid"},"parameters":{"srctbl":"triggers","srcfld1":"triggerid","dstfrm":"zbx_filter","dstfld1":"triggerids_","multiselect":"1","monitored_hosts":"1","with_monitored_triggers":"1"}}});
+chkbxRange.pageGoName = "eventids";
+chkbxRange.prefix = "problem";
+</script></div></body></html>

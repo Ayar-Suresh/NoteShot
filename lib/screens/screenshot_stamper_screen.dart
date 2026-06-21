@@ -20,15 +20,33 @@ class ScreenshotStamperScreen extends StatefulWidget {
   });
 
   @override
-  State<ScreenshotStamperScreen> createState() => _ScreenshotStamperScreenState();
+  State<ScreenshotStamperScreen> createState() =>
+      _ScreenshotStamperScreenState();
 }
 
-class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
+class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen>
+    with SingleTickerProviderStateMixin {
   File? _selectedImage;
   Offset _watermarkOffset = const Offset(20, 20);
   final GlobalKey _repaintKey = GlobalKey();
   bool _isSaving = false;
   Size _imageDisplaySize = Size.zero;
+  late AnimationController _floatController;
+
+  @override
+  void initState() {
+    super.initState();
+    _floatController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 3000),
+    )..repeat(reverse: true);
+  }
+
+  @override
+  void dispose() {
+    _floatController.dispose();
+    super.dispose();
+  }
 
   Future<void> _pickImage() async {
     final picker = ImagePicker();
@@ -46,21 +64,25 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     setState(() => _isSaving = true);
 
     try {
-      final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary = _repaintKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
       if (boundary == null) {
         setState(() => _isSaving = false);
         return;
       }
 
       final wmImage = await boundary.toImage(pixelRatio: 3.0);
-      final wmByteData = await wmImage.toByteData(format: ui.ImageByteFormat.png);
+      final wmByteData =
+          await wmImage.toByteData(format: ui.ImageByteFormat.png);
       final wmBytes = wmByteData!.buffer.asUint8List();
 
       final bgBytes = await _selectedImage!.readAsBytes();
-      final composedBytes = await _composeImages(bgBytes, wmBytes, _watermarkOffset, _imageDisplaySize);
+      final composedBytes = await _composeImages(
+          bgBytes, wmBytes, _watermarkOffset, _imageDisplaySize);
 
       final dir = await getTemporaryDirectory();
-      final fileName = 'NoteShot_Stamp_${DateTime.now().millisecondsSinceEpoch}.png';
+      final fileName =
+          'NetForge_Stamp_${DateTime.now().millisecondsSinceEpoch}.png';
       final filePath = '${dir.path}/$fileName';
       final file = File(filePath);
       await file.writeAsBytes(composedBytes);
@@ -70,19 +92,50 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFF1A2735),
+            backgroundColor: const Color(0xFF0D1520),
             content: Row(
               children: [
-                const Icon(Icons.check_circle, color: Color(0xFF00E5CC), size: 20),
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00FFD1).withOpacity(0.15),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Icon(Icons.check_circle,
+                      color: Color(0xFF00FFD1), size: 18),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
-                  child: Text('Saved: $fileName',
-                      style: const TextStyle(color: Color(0xFFE0E6ED))),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Saved to gallery',
+                        style: TextStyle(
+                          color: Color(0xFF00FFD1),
+                          fontWeight: FontWeight.w700,
+                          fontSize: 13,
+                        ),
+                      ),
+                      Text(
+                        fileName,
+                        style: TextStyle(
+                          color: const Color(0xFFE0E6ED).withOpacity(0.5),
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                  color: const Color(0xFF00FFD1).withOpacity(0.2)),
+            ),
           ),
         );
       }
@@ -90,7 +143,7 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            backgroundColor: const Color(0xFFFF6B6B),
+            backgroundColor: const Color(0xFFFF4757),
             content: Text('Save failed: $e'),
           ),
         );
@@ -100,7 +153,8 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     }
   }
 
-  Future<Uint8List> _composeImages(Uint8List bgBytes, Uint8List wmBytes, Offset offset, Size containerSize) async {
+  Future<Uint8List> _composeImages(Uint8List bgBytes, Uint8List wmBytes,
+      Offset offset, Size containerSize) async {
     final bgCodec = await ui.instantiateImageCodec(bgBytes);
     final bgFrame = await bgCodec.getNextFrame();
     final bgImage = bgFrame.image;
@@ -109,7 +163,8 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     final wmFrame = await wmCodec.getNextFrame();
     final wmImage = wmFrame.image;
 
-    final bgSize = Size(bgImage.width.toDouble(), bgImage.height.toDouble());
+    final bgSize =
+        Size(bgImage.width.toDouble(), bgImage.height.toDouble());
     double containerAspect = containerSize.width / containerSize.height;
     double imageAspect = bgSize.width / bgSize.height;
 
@@ -143,8 +198,10 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     canvas.restore();
 
     final picture = recorder.endRecording();
-    final finalImage = await picture.toImage(bgImage.width, bgImage.height);
-    final byteData = await finalImage.toByteData(format: ui.ImageByteFormat.png);
+    final finalImage =
+        await picture.toImage(bgImage.width, bgImage.height);
+    final byteData =
+        await finalImage.toByteData(format: ui.ImageByteFormat.png);
     return byteData!.buffer.asUint8List();
   }
 
@@ -162,36 +219,47 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
         title: const Text(
           'STAMP SCREENSHOT',
           style: TextStyle(
-            shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+            shadows: [Shadow(color: Colors.black, blurRadius: 6)],
           ),
         ),
         iconTheme: const IconThemeData(
-          shadows: [Shadow(color: Colors.black, blurRadius: 4)],
+          shadows: [Shadow(color: Colors.black, blurRadius: 6)],
         ),
         actions: [
           if (_selectedImage != null)
             IconButton(
               icon: _isSaving
                   ? const SizedBox(
-                      width: 20,
-                      height: 20,
+                      width: 18,
+                      height: 18,
                       child: CircularProgressIndicator(
-                          strokeWidth: 2, color: Color(0xFF00E5CC)),
+                          strokeWidth: 2, color: Color(0xFF00FFD1)),
                     )
-                  : const Icon(Icons.save_alt),
+                  : Container(
+                      padding: const EdgeInsets.all(6),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00FFD1).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: const Icon(Icons.save_alt, size: 18),
+                    ),
               onPressed: _isSaving ? null : _saveStampedImage,
             ),
         ],
       ),
-      body: _selectedImage == null ? _buildEmptyState() : _buildEditor(displayMap, storage),
+      body: _selectedImage == null
+          ? _buildEmptyState()
+          : _buildEditor(displayMap, storage),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _pickImage,
-        backgroundColor: const Color(0xFF00E5CC),
-        foregroundColor: const Color(0xFF0F1923),
+        backgroundColor: const Color(0xFF00FFD1),
+        foregroundColor: const Color(0xFF080D14),
+        elevation: 0,
         icon: const Icon(Icons.image),
         label: Text(
           _selectedImage == null ? 'SELECT IMAGE' : 'CHANGE IMAGE',
-          style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
+          style: const TextStyle(
+              fontWeight: FontWeight.w800, letterSpacing: 1.5),
         ),
       ),
     );
@@ -199,58 +267,92 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
 
   Widget _buildEmptyState() {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: const Color(0xFF1A2735),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: const Color(0xFF2A3A4A)),
+      child: AnimatedBuilder(
+        animation: _floatController,
+        builder: (context, child) {
+          final offset = Curves.easeInOut.transform(_floatController.value) *
+              10;
+          return Transform.translate(
+            offset: Offset(0, -offset),
+            child: child,
+          );
+        },
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(28),
+              decoration: BoxDecoration(
+                color: const Color(0xFF0D1520),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                    color: const Color(0xFF00FFD1).withOpacity(0.08)),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF00FFD1).withOpacity(0.03),
+                    blurRadius: 20,
+                  ),
+                ],
+              ),
+              child: Icon(
+                Icons.add_photo_alternate_outlined,
+                size: 56,
+                color: const Color(0xFF00FFD1).withOpacity(0.2),
+              ),
             ),
-            child: Icon(
-              Icons.add_photo_alternate_outlined,
-              size: 64,
-              color: Colors.white.withOpacity(0.2),
+            const SizedBox(height: 20),
+            Text(
+              'Import a screenshot to stamp',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.4),
+                fontSize: 14,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Text(
-            'Import a screenshot to stamp',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
-              fontSize: 14,
+            const SizedBox(height: 6),
+            Text(
+              'GPS telemetry will be burned onto the image',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.2),
+                fontSize: 12,
+                fontFamily: 'monospace',
+              ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            'GPS telemetry will be burned onto the image',
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.25),
-              fontSize: 12,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildEditor(Map<String, String> displayMap, StorageService storage) {
+  Widget _buildEditor(
+      Map<String, String> displayMap, StorageService storage) {
     return Column(
       children: [
         // Hint bar
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          color: const Color(0xFF00E5CC).withOpacity(0.1),
+          decoration: BoxDecoration(
+            color: const Color(0xFF00FFD1).withOpacity(0.05),
+            border: Border(
+              bottom: BorderSide(
+                  color: const Color(0xFF00FFD1).withOpacity(0.08)),
+            ),
+          ),
           child: Row(
             children: [
-              const Icon(Icons.touch_app, color: Color(0xFF00E5CC), size: 16),
+              Container(
+                padding: const EdgeInsets.all(3),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00FFD1).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Icon(Icons.touch_app,
+                    color: Color(0xFF00FFD1), size: 14),
+              ),
               const SizedBox(width: 8),
               Text(
                 'Drag the watermark to reposition it',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withOpacity(0.5),
                   fontSize: 12,
                 ),
               ),
@@ -261,7 +363,8 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              _imageDisplaySize = Size(constraints.maxWidth, constraints.maxHeight);
+              _imageDisplaySize =
+                  Size(constraints.maxWidth, constraints.maxHeight);
               return Stack(
                 fit: StackFit.expand,
                 children: [
@@ -289,7 +392,8 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
                       },
                       child: RepaintBoundary(
                         key: _repaintKey,
-                        child: _buildWatermark(displayMap, storage),
+                        child:
+                            _buildWatermark(displayMap, storage),
                       ),
                     ),
                   ),
@@ -302,7 +406,8 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     );
   }
 
-  Widget _buildWatermark(Map<String, String> displayMap, StorageService storage) {
+  Widget _buildWatermark(
+      Map<String, String> displayMap, StorageService storage) {
     // Make font size smaller so the watermark is more manageable on screen
     final double fontSize = storage.fontSize * 0.8;
     final double bgOpacity = storage.bgOpacity;
@@ -318,23 +423,28 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
     }
 
     final textColors = [
-      const Color(0xFF00E5CC),
+      const Color(0xFF00FFD1),
       const Color(0xFFFFFFFF),
       const Color(0xFFFFD700),
       const Color(0xFF00FF88),
       const Color(0xFFFF6B6B),
     ];
-    final textColor = textColors[storage.textColorIndex.clamp(0, textColors.length - 1)];
+    final textColor =
+        textColors[storage.textColorIndex.clamp(0, textColors.length - 1)];
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(bgOpacity),
-        borderRadius: BorderRadius.circular(4),
+        color: Colors.black.withOpacity(bgOpacity * 0.8),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(
+          color: textColor.withOpacity(0.2),
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -344,17 +454,25 @@ class _ScreenshotStamperScreenState extends State<ScreenshotStamperScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...lines.map((line) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: Text(
-              line,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: fontSize,
-                color: textColor == const Color(0xFFFFFFFF) ? Colors.black : textColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )),
+                padding: const EdgeInsets.symmetric(vertical: 1),
+                child: Text(
+                  line,
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: fontSize,
+                    color: textColor == const Color(0xFFFFFFFF)
+                        ? Colors.white
+                        : textColor,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.8),
+                        blurRadius: 4,
+                      ),
+                    ],
+                  ),
+                ),
+              )),
           const SizedBox(height: 4),
           Align(
             alignment: Alignment.centerRight,

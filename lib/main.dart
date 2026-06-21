@@ -19,7 +19,7 @@ void main() async {
   storageService = StorageService();
   await storageService.init();
   telemetryService = TelemetryService();
-  runApp(const NoteShotApp());
+  runApp(const NetForgeApp());
 }
 
 @pragma('vm:entry-point')
@@ -31,104 +31,117 @@ void overlayMain() {
   ));
 }
 
-class NoteShotApp extends StatelessWidget {
-  const NoteShotApp({super.key});
+class NetForgeApp extends StatelessWidget {
+  const NetForgeApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'NoteShot',
+      title: 'NetForge',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         brightness: Brightness.dark,
-        scaffoldBackgroundColor: const Color(0xFF0F1923),
-        canvasColor: const Color(0xFF0F1923),
-        primaryColor: const Color(0xFF00E5CC),
+        scaffoldBackgroundColor: const Color(0xFF080D14),
+        canvasColor: const Color(0xFF080D14),
+        primaryColor: const Color(0xFF00FFD1),
         colorScheme: const ColorScheme.dark(
-          primary: Color(0xFF00E5CC),
+          primary: Color(0xFF00FFD1),
           secondary: Color(0xFF00B4D8),
-          surface: Color(0xFF1A2735),
-          error: Color(0xFFFF6B6B),
-          onPrimary: Color(0xFF0F1923),
+          tertiary: Color(0xFFFF006E),
+          surface: Color(0xFF0D1520),
+          error: Color(0xFFFF4757),
+          onPrimary: Color(0xFF080D14),
           onSecondary: Color(0xFFFFFFFF),
           onSurface: Color(0xFFE0E6ED),
           onError: Color(0xFFFFFFFF),
         ),
         cardTheme: CardThemeData(
-          color: const Color(0xFF1A2735),
-          elevation: 8,
-          shadowColor: Colors.black54,
+          color: const Color(0xFF0D1520),
+          elevation: 0,
+          shadowColor: Colors.transparent,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
+            side: BorderSide(
+              color: const Color(0xFF00FFD1).withOpacity(0.08),
+            ),
           ),
         ),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFF0F1923),
+          backgroundColor: Color(0xFF080D14),
           elevation: 0,
           centerTitle: true,
           titleTextStyle: TextStyle(
-            color: Color(0xFF00E5CC),
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            letterSpacing: 1.2,
+            color: Color(0xFF00FFD1),
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 2.5,
+            fontFamily: 'monospace',
           ),
-          iconTheme: IconThemeData(color: Color(0xFF00E5CC)),
+          iconTheme: IconThemeData(color: Color(0xFF00FFD1)),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF00E5CC),
-            foregroundColor: const Color(0xFF0F1923),
+            backgroundColor: const Color(0xFF00FFD1),
+            foregroundColor: const Color(0xFF080D14),
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
+            elevation: 0,
             textStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 14,
-              letterSpacing: 0.8,
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+              letterSpacing: 1.5,
             ),
           ),
         ),
         inputDecorationTheme: InputDecorationTheme(
           filled: true,
-          fillColor: const Color(0xFF1A2735),
+          fillColor: const Color(0xFF0D1520),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF2A3A4A)),
+            borderSide: BorderSide(color: const Color(0xFF00FFD1).withOpacity(0.1)),
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF2A3A4A)),
+            borderSide: BorderSide(color: const Color(0xFF00FFD1).withOpacity(0.1)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF00E5CC), width: 2),
+            borderSide: const BorderSide(color: Color(0xFF00FFD1), width: 1.5),
           ),
-          labelStyle: const TextStyle(color: Color(0xFF8899AA)),
-          hintStyle: const TextStyle(color: Color(0xFF556677)),
+          labelStyle: const TextStyle(color: Color(0xFF5A6A7A)),
+          hintStyle: const TextStyle(color: Color(0xFF3A4A5A)),
         ),
-        sliderTheme: const SliderThemeData(
-          activeTrackColor: Color(0xFF00E5CC),
-          inactiveTrackColor: Color(0xFF2A3A4A),
-          thumbColor: Color(0xFF00E5CC),
-          overlayColor: Color(0x3300E5CC),
+        sliderTheme: SliderThemeData(
+          activeTrackColor: const Color(0xFF00FFD1),
+          inactiveTrackColor: const Color(0xFF1A2535),
+          thumbColor: const Color(0xFF00FFD1),
+          overlayColor: const Color(0xFF00FFD1).withOpacity(0.15),
+          trackHeight: 3,
         ),
         switchTheme: SwitchThemeData(
           thumbColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF00E5CC);
+              return const Color(0xFF00FFD1);
             }
-            return const Color(0xFF556677);
+            return const Color(0xFF3A4A5A);
           }),
           trackColor: WidgetStateProperty.resolveWith((states) {
             if (states.contains(WidgetState.selected)) {
-              return const Color(0xFF00E5CC).withOpacity(0.4);
+              return const Color(0xFF00FFD1).withOpacity(0.3);
             }
-            return const Color(0xFF2A3A4A);
+            return const Color(0xFF1A2535);
           }),
         ),
-        dividerColor: const Color(0xFF2A3A4A),
+        dividerColor: const Color(0xFF1A2535),
         useMaterial3: true,
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
+        ),
       ),
       initialRoute: '/',
       routes: {

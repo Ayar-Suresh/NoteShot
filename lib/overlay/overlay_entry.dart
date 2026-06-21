@@ -49,11 +49,11 @@ class _OverlayEntryWidgetState extends State<OverlayEntryWidget> {
     final String time = _data['time'] as String? ?? '--';
 
     final List<Color> textColors = [
-      const Color(0xFF00E5CC), // Cyan/teal
+      const Color(0xFF00FFD1), // Cyan/teal
       const Color(0xFFFFFFFF), // White
       const Color(0xFFFFD700), // Gold
       const Color(0xFF00FF88), // Green
-      const Color(0xFFFF6B6B), // Red
+      const Color(0xFFFF4757), // Red
     ];
     final Color textColor = textColors[colorIndex.clamp(0, textColors.length - 1)];
 
@@ -69,7 +69,7 @@ class _OverlayEntryWidgetState extends State<OverlayEntryWidget> {
     if (showNotes && noteText.isNotEmpty) lines.add('NOTE $noteText');
 
     if (lines.isEmpty) {
-      lines.add('NoteShot Active');
+      lines.add('NetForge Active');
     }
 
     return Material(
@@ -89,9 +89,14 @@ class _OverlayEntryWidgetState extends State<OverlayEntryWidget> {
                 blurRadius: 8,
                 offset: const Offset(0, 3),
               ),
+              BoxShadow(
+                color: textColor.withOpacity(0.1),
+                blurRadius: 12,
+                spreadRadius: 1,
+              ),
             ],
             border: Border.all(
-              color: textColor.withOpacity(0.3),
+              color: textColor.withOpacity(0.25),
               width: 1,
             ),
           ),

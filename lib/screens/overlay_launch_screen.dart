@@ -19,16 +19,22 @@ class OverlayLaunchScreen extends StatefulWidget {
   State<OverlayLaunchScreen> createState() => _OverlayLaunchScreenState();
 }
 
-class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
+class _OverlayLaunchScreenState extends State<OverlayLaunchScreen>
+    with SingleTickerProviderStateMixin {
   bool _overlayActive = false;
   bool _permissionGranted = false;
   Timer? _pumpTimer;
+  late AnimationController _entranceController;
 
   @override
   void initState() {
     super.initState();
     _checkPermission();
     _checkOverlayStatus();
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    )..forward();
   }
 
   Future<void> _checkPermission() async {
@@ -82,7 +88,8 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
   void _pushData() {
     final t = widget.telemetryService.telemetry;
     final settings = widget.storageService.toOverlayPayload();
-    final displayMap = t.toDisplayMap(use24Hour: widget.storageService.use24Hour);
+    final displayMap =
+        t.toDisplayMap(use24Hour: widget.storageService.use24Hour);
 
     final payload = <String, dynamic>{
       ...settings,
@@ -107,7 +114,27 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
   @override
   void dispose() {
     _pumpTimer?.cancel();
+    _entranceController.dispose();
     super.dispose();
+  }
+
+  Widget _buildAnimatedEntry(int index, Widget child) {
+    final delay = index * 0.15;
+    return AnimatedBuilder(
+      animation: _entranceController,
+      builder: (context, _) {
+        final progress =
+            ((_entranceController.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
+        final curved = Curves.easeOutCubic.transform(progress);
+        return Opacity(
+          opacity: curved,
+          child: Transform.translate(
+            offset: Offset(0, 16 * (1 - curved)),
+            child: child,
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -122,15 +149,15 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Permission Status Card
-            _buildPermissionCard(),
+            _buildAnimatedEntry(0, _buildPermissionCard()),
             const SizedBox(height: 16),
 
             // Overlay Control Card
-            _buildOverlayControlCard(),
+            _buildAnimatedEntry(1, _buildOverlayControlCard()),
             const SizedBox(height: 16),
 
             // Info Card
-            _buildInfoCard(),
+            _buildAnimatedEntry(2, _buildInfoCard()),
           ],
         ),
       ),
@@ -138,33 +165,29 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
   }
 
   Widget _buildPermissionCard() {
+    final statusColor = _permissionGranted
+        ? const Color(0xFF00FFD1)
+        : const Color(0xFFFF4757);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A2735),
+        color: const Color(0xFF0D1520),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: _permissionGranted
-              ? const Color(0xFF00E5CC).withOpacity(0.3)
-              : const Color(0xFFFF6B6B).withOpacity(0.3),
-        ),
+        border: Border.all(color: statusColor.withOpacity(0.15)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: (_permissionGranted
-                      ? const Color(0xFF00E5CC)
-                      : const Color(0xFFFF6B6B))
-                  .withOpacity(0.15),
+              color: statusColor.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: statusColor.withOpacity(0.1)),
             ),
             child: Icon(
               _permissionGranted ? Icons.verified : Icons.shield,
-              color: _permissionGranted
-                  ? const Color(0xFF00E5CC)
-                  : const Color(0xFFFF6B6B),
+              color: statusColor,
               size: 22,
             ),
           ),
@@ -183,10 +206,13 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  _permissionGranted ? 'Permission granted' : 'Permission required',
+                  _permissionGranted
+                      ? 'Permission granted'
+                      : 'Permission required',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.4),
-                    fontSize: 12,
+                    color: statusColor.withOpacity(0.6),
+                    fontSize: 11,
+                    fontFamily: 'monospace',
                   ),
                 ),
               ],
@@ -196,9 +222,10 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
             ElevatedButton(
               onPressed: _requestPermission,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               ),
-              child: const Text('GRANT', style: TextStyle(fontSize: 12)),
+              child: const Text('GRANT', style: TextStyle(fontSize: 11)),
             ),
         ],
       ),
@@ -210,34 +237,50 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: _overlayActive
-              ? [const Color(0xFF00E5CC).withOpacity(0.15), const Color(0xFF1A2735)]
-              : [const Color(0xFF1A2735), const Color(0xFF1A2735)],
-        ),
+        color: const Color(0xFF0D1520),
         border: Border.all(
           color: _overlayActive
-              ? const Color(0xFF00E5CC).withOpacity(0.4)
-              : const Color(0xFF2A3A4A),
+              ? const Color(0xFF00FFD1).withOpacity(0.2)
+              : const Color(0xFF00FFD1).withOpacity(0.05),
         ),
+        boxShadow: _overlayActive
+            ? [
+                BoxShadow(
+                  color: const Color(0xFF00FFD1).withOpacity(0.05),
+                  blurRadius: 20,
+                  spreadRadius: 2,
+                ),
+              ]
+            : [],
       ),
       child: Column(
         children: [
-          Icon(
-            _overlayActive ? Icons.layers : Icons.layers_outlined,
-            color: _overlayActive ? const Color(0xFF00E5CC) : const Color(0xFF556677),
-            size: 48,
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: _overlayActive
+                  ? const Color(0xFF00FFD1).withOpacity(0.08)
+                  : const Color(0xFF1A2535).withOpacity(0.5),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(
+              _overlayActive ? Icons.layers : Icons.layers_outlined,
+              color: _overlayActive
+                  ? const Color(0xFF00FFD1)
+                  : const Color(0xFF3A4A5A),
+              size: 40,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
           Text(
             _overlayActive ? 'Overlay Active' : 'Overlay Inactive',
             style: TextStyle(
-              color: _overlayActive ? const Color(0xFF00E5CC) : Colors.white.withOpacity(0.6),
-              fontSize: 18,
+              color: _overlayActive
+                  ? const Color(0xFF00FFD1)
+                  : Colors.white.withOpacity(0.5),
+              fontSize: 17,
               fontWeight: FontWeight.w700,
-              letterSpacing: 0.5,
+              letterSpacing: 1,
             ),
           ),
           const SizedBox(height: 6),
@@ -247,7 +290,7 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
                 : 'Start the overlay to display GPS telemetry over other apps.',
             textAlign: TextAlign.center,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.4),
+              color: Colors.white.withOpacity(0.35),
               fontSize: 12,
               height: 1.5,
             ),
@@ -257,17 +300,22 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
             width: double.infinity,
             child: ElevatedButton.icon(
               onPressed: _overlayActive ? _stopOverlay : _startOverlay,
-              icon: Icon(_overlayActive ? Icons.stop_circle : Icons.play_arrow),
+              icon: Icon(
+                  _overlayActive ? Icons.stop_circle : Icons.play_arrow),
               label: Text(
                 _overlayActive ? 'STOP OVERLAY' : 'START OVERLAY',
-                style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
+                style: const TextStyle(
+                    fontWeight: FontWeight.w800, letterSpacing: 1.5),
               ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: _overlayActive
-                    ? const Color(0xFFFF6B6B)
-                    : const Color(0xFF00E5CC),
-                foregroundColor: _overlayActive ? Colors.white : const Color(0xFF0F1923),
+                    ? const Color(0xFFFF4757)
+                    : const Color(0xFF00FFD1),
+                foregroundColor: _overlayActive
+                    ? Colors.white
+                    : const Color(0xFF080D14),
                 padding: const EdgeInsets.symmetric(vertical: 14),
+                elevation: 0,
               ),
             ),
           ),
@@ -280,34 +328,46 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A2735),
+        color: const Color(0xFF0D1520),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF2A3A4A)),
+        border: Border.all(color: const Color(0xFF00FFD1).withOpacity(0.05)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.info_outline,
-                  color: Colors.white.withOpacity(0.5), size: 18),
+              Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00FFD1).withOpacity(0.08),
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                child: Icon(Icons.info_outline,
+                    color: Colors.white.withOpacity(0.4), size: 14),
+              ),
               const SizedBox(width: 8),
               Text(
-                'How it works',
+                'HOW IT WORKS',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.7),
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                  fontFamily: 'monospace',
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildInfoStep('1', 'Start GPS tracking from the dashboard'),
-          _buildInfoStep('2', 'Launch the overlay to display telemetry'),
-          _buildInfoStep('3', 'Switch to speed test apps (Fast.com, Ookla, etc.)'),
-          _buildInfoStep('4', 'Take a native screenshot — GPS data will be visible'),
-          _buildInfoStep('5', 'Return here to stop the overlay when done'),
+          const SizedBox(height: 14),
+          _buildInfoStep('01', 'Start GPS tracking from the dashboard'),
+          _buildInfoStep('02', 'Launch the overlay to display telemetry'),
+          _buildInfoStep(
+              '03', 'Switch to speed test apps (Fast.com, Ookla, etc.)'),
+          _buildInfoStep(
+              '04', 'Take a native screenshot — GPS data will be visible'),
+          _buildInfoStep(
+              '05', 'Return here to stop the overlay when done'),
         ],
       ),
     );
@@ -315,24 +375,27 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
 
   Widget _buildInfoStep(String num, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            width: 22,
-            height: 22,
+            width: 24,
+            height: 24,
             alignment: Alignment.center,
             decoration: BoxDecoration(
-              color: const Color(0xFF00E5CC).withOpacity(0.15),
+              color: const Color(0xFF00FFD1).withOpacity(0.08),
               borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                  color: const Color(0xFF00FFD1).withOpacity(0.1)),
             ),
             child: Text(
               num,
               style: const TextStyle(
-                color: Color(0xFF00E5CC),
-                fontSize: 11,
+                color: Color(0xFF00FFD1),
+                fontSize: 10,
                 fontWeight: FontWeight.w700,
+                fontFamily: 'monospace',
               ),
             ),
           ),
@@ -341,7 +404,7 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen> {
             child: Text(
               text,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
+                color: Colors.white.withOpacity(0.45),
                 fontSize: 12,
                 height: 1.4,
               ),

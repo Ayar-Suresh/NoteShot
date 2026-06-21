@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import '../services/telemetry_service.dart';
 import '../services/storage_service.dart';
@@ -24,11 +25,15 @@ class _DashboardScreenState extends State<DashboardScreen>
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _shimmerController;
+  late AnimationController _fabGlowController;
+  late Animation<double> _fabGlowAnimation;
+  late AnimationController _entranceController;
 
   @override
   void initState() {
     super.initState();
-    _noteController = TextEditingController(text: widget.storageService.noteText);
+    _noteController =
+        TextEditingController(text: widget.storageService.noteText);
     widget.telemetryService.addListener(_onTelemetryUpdate);
 
     _pulseController = AnimationController(
@@ -43,6 +48,19 @@ class _DashboardScreenState extends State<DashboardScreen>
       vsync: this,
       duration: const Duration(milliseconds: 1200),
     )..repeat();
+
+    _fabGlowController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat(reverse: true);
+    _fabGlowAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fabGlowController, curve: Curves.easeInOut),
+    );
+
+    _entranceController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1200),
+    )..forward();
   }
 
   void _onTelemetryUpdate() {
@@ -71,6 +89,8 @@ class _DashboardScreenState extends State<DashboardScreen>
     _noteController.dispose();
     _pulseController.dispose();
     _shimmerController.dispose();
+    _fabGlowController.dispose();
+    _entranceController.dispose();
     super.dispose();
   }
 
@@ -86,24 +106,59 @@ class _DashboardScreenState extends State<DashboardScreen>
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  colors: [Color(0xFF00E5CC), Color(0xFF00B4D8)],
-                ),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Icon(Icons.gps_fixed, color: Color(0xFF0F1923), size: 18),
+            AnimatedBuilder(
+              animation: _pulseAnimation,
+              builder: (context, child) {
+                return Container(
+                  padding: const EdgeInsets.all(7),
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF00FFD1), Color(0xFF00B4D8)],
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF00FFD1)
+                            .withOpacity(_pulseAnimation.value * 0.3),
+                        blurRadius: 12,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.hub,
+                      color: Color(0xFF080D14), size: 16),
+                );
+              },
             ),
             const SizedBox(width: 10),
-            const Text('NOTESHOT'),
+            ShaderMask(
+              shaderCallback: (bounds) => const LinearGradient(
+                colors: [Color(0xFF00FFD1), Color(0xFF00B4D8)],
+              ).createShader(bounds),
+              child: const Text(
+                'NETFORGE',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 3,
+                ),
+              ),
+            ),
           ],
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.tune),
-            onPressed: () => Navigator.pushNamed(context, '/settings').then((_) => setState(() {})),
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FFD1).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.tune, size: 18),
+            ),
+            onPressed: () => Navigator.pushNamed(context, '/settings')
+                .then((_) => setState(() {})),
           ),
         ],
       ),
@@ -114,27 +169,44 @@ class _DashboardScreenState extends State<DashboardScreen>
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // Status indicator bar
-            _buildStatusBar(status),
+            _buildAnimatedEntry(0, _buildStatusBar(status)),
             const SizedBox(height: 16),
 
             // Live Telemetry Card
-            _buildTelemetryCard(status, telemetry, use24),
+            _buildAnimatedEntry(1, _buildTelemetryCard(status, telemetry, use24)),
             const SizedBox(height: 16),
 
             // Note Input
-            _buildNoteField(),
+            _buildAnimatedEntry(2, _buildNoteField()),
             const SizedBox(height: 20),
 
             // Navigation Grid Title
-            Padding(
-              padding: const EdgeInsets.only(left: 4, bottom: 10),
-              child: Text(
-                'WORKFLOWS',
-                style: TextStyle(
-                  color: Colors.white.withValues(alpha: 0.5),
-                  fontSize: 12,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2.0,
+            _buildAnimatedEntry(
+              3,
+              Padding(
+                padding: const EdgeInsets.only(left: 4, bottom: 10),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 3,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF00FFD1),
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      'WORKFLOWS',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.4),
+                        fontSize: 11,
+                        fontWeight: FontWeight.w800,
+                        letterSpacing: 3.0,
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -148,23 +220,66 @@ class _DashboardScreenState extends State<DashboardScreen>
     );
   }
 
+  Widget _buildAnimatedEntry(int index, Widget child) {
+    final delay = index * 0.12;
+    return AnimatedBuilder(
+      animation: _entranceController,
+      builder: (context, _) {
+        final progress =
+            ((_entranceController.value - delay) / (1.0 - delay)).clamp(0.0, 1.0);
+        final curved = Curves.easeOutCubic.transform(progress);
+        return Opacity(
+          opacity: curved,
+          child: Transform.translate(
+            offset: Offset(0, 20 * (1 - curved)),
+            child: child,
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildStatusBar(TelemetryStatus status) {
     final Map<TelemetryStatus, (IconData, String, Color)> statusMap = {
-      TelemetryStatus.idle: (Icons.gps_off, 'GPS Idle', const Color(0xFF556677)),
-      TelemetryStatus.requesting: (Icons.sync, 'Acquiring Signal...', const Color(0xFFFFAA00)),
-      TelemetryStatus.streaming: (Icons.gps_fixed, 'Live Tracking', const Color(0xFF00E5CC)),
-      TelemetryStatus.denied: (Icons.block, 'Permission Denied', const Color(0xFFFF6B6B)),
-      TelemetryStatus.serviceOff: (Icons.location_off, 'Location Off', const Color(0xFFFF6B6B)),
-      TelemetryStatus.error: (Icons.error_outline, 'Error', const Color(0xFFFF6B6B)),
+      TelemetryStatus.idle: (
+        Icons.gps_off,
+        'GPS Idle',
+        const Color(0xFF3A4A5A)
+      ),
+      TelemetryStatus.requesting: (
+        Icons.sync,
+        'Acquiring Signal...',
+        const Color(0xFFFFAA00)
+      ),
+      TelemetryStatus.streaming: (
+        Icons.gps_fixed,
+        'Live Tracking',
+        const Color(0xFF00FFD1)
+      ),
+      TelemetryStatus.denied: (
+        Icons.block,
+        'Permission Denied',
+        const Color(0xFFFF4757)
+      ),
+      TelemetryStatus.serviceOff: (
+        Icons.location_off,
+        'Location Off',
+        const Color(0xFFFF4757)
+      ),
+      TelemetryStatus.error: (
+        Icons.error_outline,
+        'Error',
+        const Color(0xFFFF4757)
+      ),
     };
 
     final info = statusMap[status]!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: info.$3.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: info.$3.withValues(alpha: 0.3)),
+        color: info.$3.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: info.$3.withOpacity(0.15)),
       ),
       child: Row(
         children: [
@@ -177,10 +292,11 @@ class _DashboardScreenState extends State<DashboardScreen>
                   height: 10,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: info.$3.withValues(alpha: _pulseAnimation.value),
+                    color: info.$3.withOpacity(_pulseAnimation.value),
                     boxShadow: [
                       BoxShadow(
-                        color: info.$3.withValues(alpha: _pulseAnimation.value * 0.5),
+                        color: info.$3
+                            .withOpacity(_pulseAnimation.value * 0.5),
                         blurRadius: 8,
                       ),
                     ],
@@ -196,26 +312,31 @@ class _DashboardScreenState extends State<DashboardScreen>
             style: TextStyle(
               color: info.$3,
               fontWeight: FontWeight.w600,
-              fontSize: 13,
-              letterSpacing: 0.5,
+              fontSize: 12,
+              letterSpacing: 0.8,
+              fontFamily: 'monospace',
             ),
           ),
           const Spacer(),
-          if (status == TelemetryStatus.denied || status == TelemetryStatus.serviceOff)
+          if (status == TelemetryStatus.denied ||
+              status == TelemetryStatus.serviceOff)
             GestureDetector(
               onTap: () => widget.telemetryService.startTracking(),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: info.$3.withValues(alpha: 0.2),
+                  color: info.$3.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: info.$3.withOpacity(0.2)),
                 ),
                 child: Text(
                   'RETRY',
                   style: TextStyle(
                     color: info.$3,
                     fontWeight: FontWeight.w700,
-                    fontSize: 11,
+                    fontSize: 10,
+                    letterSpacing: 1,
                   ),
                 ),
               ),
@@ -233,20 +354,13 @@ class _DashboardScreenState extends State<DashboardScreen>
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            const Color(0xFF1A2735),
-            const Color(0xFF1A2735).withValues(alpha: 0.8),
-          ],
-        ),
+        color: const Color(0xFF0D1520),
         border: Border.all(
-          color: const Color(0xFF00E5CC).withValues(alpha: 0.15),
+          color: const Color(0xFF00FFD1).withOpacity(0.08),
         ),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF00E5CC).withValues(alpha: 0.05),
+            color: const Color(0xFF00FFD1).withOpacity(0.03),
             blurRadius: 20,
             spreadRadius: 2,
           ),
@@ -259,16 +373,24 @@ class _DashboardScreenState extends State<DashboardScreen>
           children: [
             Row(
               children: [
-                const Icon(Icons.satellite_alt,
-                    color: Color(0xFF00E5CC), size: 18),
+                Container(
+                  padding: const EdgeInsets.all(6),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF00FFD1).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Icon(Icons.satellite_alt,
+                      color: Color(0xFF00FFD1), size: 14),
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'TELEMETRY',
                   style: TextStyle(
-                    color: Color(0xFF00E5CC),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    letterSpacing: 2,
+                    color: Color(0xFF00FFD1),
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 3,
+                    fontFamily: 'monospace',
                   ),
                 ),
                 const Spacer(),
@@ -277,7 +399,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     width: 14,
                     height: 14,
                     child: CircularProgressIndicator(
-                      strokeWidth: 2,
+                      strokeWidth: 1.5,
                       valueColor:
                           AlwaysStoppedAnimation(Color(0xFFFFAA00)),
                     ),
@@ -306,11 +428,11 @@ class _DashboardScreenState extends State<DashboardScreen>
             child: Text(
               label,
               style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.4),
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+                color: Colors.white.withOpacity(0.3),
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
                 fontFamily: 'monospace',
-                letterSpacing: 1,
+                letterSpacing: 1.5,
               ),
             ),
           ),
@@ -330,9 +452,9 @@ class _DashboardScreenState extends State<DashboardScreen>
                             end: Alignment(
                                 1.0 + 2.0 * _shimmerController.value, 0),
                             colors: const [
-                              Color(0xFF2A3A4A),
-                              Color(0xFF3A4A5A),
-                              Color(0xFF2A3A4A),
+                              Color(0xFF1A2535),
+                              Color(0xFF243040),
+                              Color(0xFF1A2535),
                             ],
                           ),
                         ),
@@ -343,7 +465,7 @@ class _DashboardScreenState extends State<DashboardScreen>
                     value,
                     style: const TextStyle(
                       color: Color(0xFFE0E6ED),
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'monospace',
                     ),
@@ -360,14 +482,28 @@ class _DashboardScreenState extends State<DashboardScreen>
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            'LOCATION NOTE',
-            style: TextStyle(
-              color: Colors.white.withValues(alpha: 0.5),
-              fontSize: 12,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 2.0,
-            ),
+          child: Row(
+            children: [
+              Container(
+                width: 3,
+                height: 14,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF00B4D8),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                'LOCATION NOTE',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.4),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 3.0,
+                  fontFamily: 'monospace',
+                ),
+              ),
+            ],
           ),
         ),
         TextField(
@@ -376,12 +512,20 @@ class _DashboardScreenState extends State<DashboardScreen>
           style: const TextStyle(color: Color(0xFFE0E6ED), fontSize: 14),
           decoration: InputDecoration(
             hintText: 'e.g., Sanghavi Infotech, Japan, China',
-            prefixIcon: const Icon(Icons.edit_location_alt,
-                color: Color(0xFF00E5CC), size: 20),
+            prefixIcon: Container(
+              margin: const EdgeInsets.all(10),
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FFD1).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: const Icon(Icons.edit_location_alt,
+                  color: Color(0xFF00FFD1), size: 16),
+            ),
             suffixIcon: _noteController.text.isNotEmpty
                 ? IconButton(
                     icon: Icon(Icons.clear,
-                        color: Colors.white.withValues(alpha: 0.3), size: 18),
+                        color: Colors.white.withOpacity(0.2), size: 16),
                     onPressed: () {
                       _noteController.clear();
                       _onNoteChanged('');
@@ -397,13 +541,20 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   Widget _buildNavigationGrid(BuildContext context) {
     final items = [
-      _NavItem('System\nOverlay', Icons.layers, [const Color(0xFF00E5CC), const Color(0xFF00B4D8)], '/overlay'),
-      _NavItem('Camera\nCapture', Icons.camera_alt, [const Color(0xFF6C63FF), const Color(0xFF3B82F6)], '/camera'),
-      _NavItem('Stamp\nScreenshot', Icons.photo_filter, [const Color(0xFFFF6B6B), const Color(0xFFFF8E53)], '/stamper'),
-      _NavItem('Speed\nTest', Icons.speed, [const Color(0xFF00C9A7), const Color(0xFF845EC2)], '/browser'),
-      _NavItem('Zabbix\nMonitor', Icons.monitor_heart, [const Color(0xFF00B4D8), const Color(0xFF6C63FF)], '/zabbix'),
-      _NavItem('Cyber\nPing', Icons.terminal, [const Color(0xFF00FF41), const Color(0xFF00E5CC)], '/ping'),
-      _NavItem('Settings', Icons.tune, [const Color(0xFF556677), const Color(0xFF3A4A5A)], '/settings'),
+      _NavItem('System\nOverlay', Icons.layers,
+          [const Color(0xFF00FFD1), const Color(0xFF00B4D8)], '/overlay'),
+      _NavItem('Camera\nCapture', Icons.camera_alt,
+          [const Color(0xFF6C63FF), const Color(0xFF3B82F6)], '/camera'),
+      _NavItem('Stamp\nScreenshot', Icons.photo_filter,
+          [const Color(0xFFFF4757), const Color(0xFFFF8E53)], '/stamper'),
+      _NavItem('Speed\nTest', Icons.speed,
+          [const Color(0xFF00C9A7), const Color(0xFF845EC2)], '/browser'),
+      _NavItem('Zabbix\nMonitor', Icons.monitor_heart,
+          [const Color(0xFF00B4D8), const Color(0xFF6C63FF)], '/zabbix'),
+      _NavItem('Cyber\nPing', Icons.terminal,
+          [const Color(0xFF00FF41), const Color(0xFF00FFD1)], '/ping'),
+      _NavItem('Settings', Icons.tune,
+          [const Color(0xFF3A4A5A), const Color(0xFF2A3A4A)], '/settings'),
     ];
 
     return GridView.builder(
@@ -411,39 +562,121 @@ class _DashboardScreenState extends State<DashboardScreen>
       physics: const NeverScrollableScrollPhysics(),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1.6,
+        mainAxisSpacing: 10,
+        crossAxisSpacing: 10,
+        childAspectRatio: 1.65,
       ),
       itemCount: items.length,
       itemBuilder: (context, index) {
-        final item = items[index];
-        return _buildNavCard(context, item);
+        return _buildAnimatedEntry(
+          4 + index,
+          _NavCard(
+            item: items[index],
+            onTap: () => Navigator.pushNamed(context, items[index].route)
+                .then((_) => setState(() {})),
+          ),
+        );
       },
     );
   }
 
-  Widget _buildNavCard(BuildContext context, _NavItem item) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () => Navigator.pushNamed(context, item.route)
-            .then((_) => setState(() {})),
-        borderRadius: BorderRadius.circular(14),
-        child: Container(
+  Widget _buildFAB(bool isStreaming) {
+    return AnimatedBuilder(
+      animation: _fabGlowAnimation,
+      builder: (context, child) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: (isStreaming
+                        ? const Color(0xFFFF4757)
+                        : const Color(0xFF00FFD1))
+                    .withOpacity(_fabGlowAnimation.value * 0.3),
+                blurRadius: 16,
+                spreadRadius: 2,
+              ),
+            ],
+          ),
+          child: FloatingActionButton.extended(
+            onPressed: _toggleTracking,
+            backgroundColor: isStreaming
+                ? const Color(0xFFFF4757)
+                : const Color(0xFF00FFD1),
+            foregroundColor:
+                isStreaming ? Colors.white : const Color(0xFF080D14),
+            elevation: 0,
+            icon: Icon(isStreaming ? Icons.stop_circle : Icons.play_arrow),
+            label: Text(
+              isStreaming ? 'STOP GPS' : 'START GPS',
+              style: const TextStyle(
+                fontWeight: FontWeight.w800,
+                letterSpacing: 1.5,
+                fontSize: 12,
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _NavItem {
+  final String label;
+  final IconData icon;
+  final List<Color> gradient;
+  final String route;
+  _NavItem(this.label, this.icon, this.gradient, this.route);
+}
+
+class _NavCard extends StatefulWidget {
+  final _NavItem item;
+  final VoidCallback onTap;
+
+  const _NavCard({required this.item, required this.onTap});
+
+  @override
+  State<_NavCard> createState() => _NavCardState();
+}
+
+class _NavCardState extends State<_NavCard>
+    with SingleTickerProviderStateMixin {
+  bool _isPressed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final item = widget.item;
+    return GestureDetector(
+      onTapDown: (_) => setState(() => _isPressed = true),
+      onTapUp: (_) {
+        setState(() => _isPressed = false);
+        widget.onTap();
+      },
+      onTapCancel: () => setState(() => _isPressed = false),
+      child: AnimatedScale(
+        scale: _isPressed ? 0.95 : 1.0,
+        duration: const Duration(milliseconds: 150),
+        curve: Curves.easeOut,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(14),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                item.gradient[0].withValues(alpha: 0.15),
-                item.gradient[1].withValues(alpha: 0.05),
-              ],
-            ),
+            color: const Color(0xFF0D1520),
             border: Border.all(
-              color: item.gradient[0].withValues(alpha: 0.2),
+              color: _isPressed
+                  ? item.gradient[0].withOpacity(0.4)
+                  : item.gradient[0].withOpacity(0.1),
             ),
+            boxShadow: _isPressed
+                ? [
+                    BoxShadow(
+                      color: item.gradient[0].withOpacity(0.15),
+                      blurRadius: 16,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : [],
           ),
           padding: const EdgeInsets.all(14),
           child: Column(
@@ -455,16 +688,23 @@ class _DashboardScreenState extends State<DashboardScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: item.gradient),
                   borderRadius: BorderRadius.circular(8),
+                  boxShadow: [
+                    BoxShadow(
+                      color: item.gradient[0].withOpacity(0.2),
+                      blurRadius: 8,
+                    ),
+                  ],
                 ),
-                child: Icon(item.icon, color: Colors.white, size: 18),
+                child: Icon(item.icon, color: Colors.white, size: 16),
               ),
               Text(
                 item.label,
                 style: const TextStyle(
                   color: Color(0xFFE0E6ED),
-                  fontSize: 12,
+                  fontSize: 11,
                   fontWeight: FontWeight.w600,
                   height: 1.3,
+                  letterSpacing: 0.3,
                 ),
               ),
             ],
@@ -473,25 +713,4 @@ class _DashboardScreenState extends State<DashboardScreen>
       ),
     );
   }
-
-  Widget _buildFAB(bool isStreaming) {
-    return FloatingActionButton.extended(
-      onPressed: _toggleTracking,
-      backgroundColor: isStreaming ? const Color(0xFFFF6B6B) : const Color(0xFF00E5CC),
-      foregroundColor: isStreaming ? Colors.white : const Color(0xFF0F1923),
-      icon: Icon(isStreaming ? Icons.stop_circle : Icons.play_arrow),
-      label: Text(
-        isStreaming ? 'STOP GPS' : 'START GPS',
-        style: const TextStyle(fontWeight: FontWeight.w700, letterSpacing: 1),
-      ),
-    );
-  }
-}
-
-class _NavItem {
-  final String label;
-  final IconData icon;
-  final List<Color> gradient;
-  final String route;
-  _NavItem(this.label, this.icon, this.gradient, this.route);
 }

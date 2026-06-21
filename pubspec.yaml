@@ -1,5 +1,5 @@
-name: noteshot
-description: "GPS Stamper & Overlay - Network Engineering Utility"
+name: netforge
+description: "NetForge — Network Engineering & GPS Telemetry Suite"
 publish_to: 'none'
 
 version: 1.0.0+1

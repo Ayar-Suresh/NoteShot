@@ -17,12 +17,14 @@ class BrowserTestScreen extends StatefulWidget {
   State<BrowserTestScreen> createState() => _BrowserTestScreenState();
 }
 
-class _BrowserTestScreenState extends State<BrowserTestScreen> {
+class _BrowserTestScreenState extends State<BrowserTestScreen>
+    with SingleTickerProviderStateMixin {
   late WebViewController _webController;
   bool _isLoading = true;
   String _currentUrl = 'https://www.nperf.com/en/';
   Offset _hudOffset = const Offset(10, 10);
   bool _showHud = true;
+  late AnimationController _loadingBarController;
 
   final List<_SpeedSite> _sites = [
     _SpeedSite('Fast.com', 'https://fast.com', Icons.bolt),
@@ -33,6 +35,12 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
   void initState() {
     super.initState();
     widget.telemetryService.addListener(_onUpdate);
+
+    _loadingBarController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 2000),
+    )..repeat();
+
     _initWebView();
   }
 
@@ -65,21 +73,32 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A2735),
-        title: const Text('Add Custom Speed Test URL', style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xFF0D1520),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(
+              color: const Color(0xFF00FFD1).withOpacity(0.1)),
+        ),
+        title: const Text('Add Custom Speed Test URL',
+            style: TextStyle(
+                color: Color(0xFF00FFD1),
+                fontSize: 16,
+                fontWeight: FontWeight.w700)),
         content: TextField(
           controller: controller,
           style: const TextStyle(color: Colors.white),
           decoration: const InputDecoration(
             hintText: 'https://...',
-            hintStyle: TextStyle(color: Colors.white54),
+            hintStyle: TextStyle(color: Colors.white24),
           ),
           autofocus: true,
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('CANCEL', style: TextStyle(color: Colors.white54)),
+            child: Text('CANCEL',
+                style: TextStyle(
+                    color: Colors.white.withOpacity(0.4), fontSize: 12)),
           ),
           TextButton(
             onPressed: () {
@@ -92,7 +111,10 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
               }
               Navigator.pop(context);
             },
-            child: const Text('ADD', style: TextStyle(color: Color(0xFF00E5CC))),
+            child: const Text('ADD',
+                style: TextStyle(
+                    color: Color(0xFF00FFD1),
+                    fontWeight: FontWeight.w700)),
           ),
         ],
       ),
@@ -102,6 +124,7 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
   @override
   void dispose() {
     widget.telemetryService.removeListener(_onUpdate);
+    _loadingBarController.dispose();
     super.dispose();
   }
 
@@ -117,7 +140,20 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
         actions: [
           // Site selector
           PopupMenuButton<String>(
-            icon: const Icon(Icons.public),
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FFD1).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.public, size: 18),
+            ),
+            color: const Color(0xFF0D1520),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(
+                  color: const Color(0xFF00FFD1).withOpacity(0.1)),
+            ),
             onSelected: (val) {
               if (val == '__ADD_CUSTOM__') {
                 _showAddCustomDialog();
@@ -128,9 +164,10 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
             itemBuilder: (context) {
               final allUrls = [
                 ..._sites,
-                ...widget.storageService.customUrls.map((url) => _SpeedSite('Custom', url, Icons.public)),
+                ...widget.storageService.customUrls
+                    .map((url) => _SpeedSite('Custom', url, Icons.public)),
               ];
-              
+
               final items = allUrls.map((site) {
                 return PopupMenuItem(
                   value: site.url,
@@ -138,43 +175,60 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
                     children: [
                       Icon(site.icon,
                           color: site.url == _currentUrl
-                              ? const Color(0xFF00E5CC)
+                              ? const Color(0xFF00FFD1)
                               : Colors.white54,
                           size: 18),
                       const SizedBox(width: 10),
-                      Expanded(child: Text(site.name + (site.name == 'Custom' ? ': ${site.url}' : ''), overflow: TextOverflow.ellipsis)),
+                      Expanded(
+                          child: Text(
+                              site.name +
+                                  (site.name == 'Custom'
+                                      ? ': ${site.url}'
+                                      : ''),
+                              overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 );
               }).toList();
-              
-              items.add(
-                const PopupMenuItem(
-                  value: '__ADD_CUSTOM__',
-                  child: Row(
-                    children: [
-                      Icon(Icons.add, color: Color(0xFF00E5CC), size: 18),
-                      SizedBox(width: 10),
-                      Text('Add Custom Site', style: TextStyle(color: Color(0xFF00E5CC))),
-                    ],
-                  ),
-                )
-              );
-              
+
+              items.add(const PopupMenuItem(
+                value: '__ADD_CUSTOM__',
+                child: Row(
+                  children: [
+                    Icon(Icons.add, color: Color(0xFF00FFD1), size: 18),
+                    SizedBox(width: 10),
+                    Text('Add Custom Site',
+                        style: TextStyle(color: Color(0xFF00FFD1))),
+                  ],
+                ),
+              ));
+
               return items;
             },
           ),
           // Toggle HUD
           IconButton(
-            icon: Icon(
-              _showHud ? Icons.visibility : Icons.visibility_off,
-              color: _showHud ? const Color(0xFF00E5CC) : Colors.white38,
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: _showHud
+                    ? const Color(0xFF00FFD1).withOpacity(0.1)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(
+                _showHud ? Icons.visibility : Icons.visibility_off,
+                color: _showHud
+                    ? const Color(0xFF00FFD1)
+                    : Colors.white38,
+                size: 18,
+              ),
             ),
             onPressed: () => setState(() => _showHud = !_showHud),
           ),
           // Reload
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh, size: 20),
             onPressed: () => _webController.reload(),
           ),
         ],
@@ -184,16 +238,33 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
           // WebView
           WebViewWidget(controller: _webController),
 
-          // Loading bar
+          // Animated loading bar
           if (_isLoading)
-            const Positioned(
+            Positioned(
               top: 0,
               left: 0,
               right: 0,
-              child: LinearProgressIndicator(
-                backgroundColor: Color(0xFF1A2735),
-                valueColor: AlwaysStoppedAnimation(Color(0xFF00E5CC)),
-                minHeight: 3,
+              child: AnimatedBuilder(
+                animation: _loadingBarController,
+                builder: (context, child) {
+                  return Container(
+                    height: 3,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment(
+                            -1.0 + 2.0 * _loadingBarController.value, 0),
+                        end: Alignment(
+                            1.0 + 2.0 * _loadingBarController.value, 0),
+                        colors: const [
+                          Color(0xFF080D14),
+                          Color(0xFF00FFD1),
+                          Color(0xFF00B4D8),
+                          Color(0xFF080D14),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
             ),
 
@@ -207,8 +278,10 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
                   setState(() {
                     final size = MediaQuery.of(context).size;
                     _hudOffset = Offset(
-                      (_hudOffset.dx + details.delta.dx).clamp(0, size.width - 100),
-                      (_hudOffset.dy + details.delta.dy).clamp(0, size.height - 200),
+                      (_hudOffset.dx + details.delta.dx)
+                          .clamp(0, size.width - 100),
+                      (_hudOffset.dy + details.delta.dy)
+                          .clamp(0, size.height - 200),
                     );
                   });
                 },
@@ -220,7 +293,8 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
     );
   }
 
-  Widget _buildHud(Map<String, String> displayMap, StorageService storage) {
+  Widget _buildHud(
+      Map<String, String> displayMap, StorageService storage) {
     final double fontSize = storage.fontSize * 0.8;
     final double bgOpacity = storage.bgOpacity;
     final lines = <String>[];
@@ -235,23 +309,28 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
     }
 
     final textColors = [
-      const Color(0xFF00E5CC),
+      const Color(0xFF00FFD1),
       const Color(0xFFFFFFFF),
       const Color(0xFFFFD700),
       const Color(0xFF00FF88),
       const Color(0xFFFF6B6B),
     ];
-    final textColor = textColors[storage.textColorIndex.clamp(0, textColors.length - 1)];
+    final textColor =
+        textColors[storage.textColorIndex.clamp(0, textColors.length - 1)];
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(bgOpacity),
-        borderRadius: BorderRadius.circular(4),
+        color: Colors.black.withOpacity(bgOpacity * 0.85),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: textColor.withOpacity(0.2),
+          width: 0.5,
+        ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 8,
+            color: Colors.black.withOpacity(0.5),
+            blurRadius: 10,
             offset: const Offset(0, 2),
           ),
         ],
@@ -261,17 +340,26 @@ class _BrowserTestScreenState extends State<BrowserTestScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           ...lines.map((line) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 1),
-            child: Text(
-              line,
-              style: TextStyle(
-                fontFamily: 'monospace',
-                fontSize: fontSize,
-                color: textColor == const Color(0xFFFFFFFF) ? Colors.black : textColor,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          )),
+                padding: const EdgeInsets.symmetric(vertical: 1),
+                child: Text(
+                  line,
+                  style: TextStyle(
+                    fontFamily: 'monospace',
+                    fontSize: fontSize,
+                    color: textColor == const Color(0xFFFFFFFF)
+                        ? Colors.white
+                        : textColor,
+                    fontWeight: FontWeight.w600,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.9),
+                        blurRadius: 4,
+                        offset: const Offset(1, 1),
+                      ),
+                    ],
+                  ),
+                ),
+              )),
           const SizedBox(height: 4),
           Align(
             alignment: Alignment.centerRight,

@@ -16,7 +16,7 @@ dependencies:
   geolocator: ^10.1.0
   shared_preferences: ^2.2.2
   permission_handler: ^11.1.0
-  
+
   # Workflow 1: System-wide background overlay
   flutter_overlay_window: ^0.4.1
   
@@ -37,6 +37,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
+  
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/icons/netforge_logo.png"
 
 flutter:
   uses-material-design: true

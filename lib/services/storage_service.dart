@@ -13,6 +13,12 @@ class StorageService {
   static const _keyUse24Hour = 'use_24_hour';
   static const _keyTextColorIndex = 'text_color_index';
   static const _keyCustomUrls = 'custom_urls';
+  static const _keyUseIST = 'use_ist';
+  static const _keyUseMockLocation = 'use_mock_location';
+  static const _keyCustomLat = 'custom_lat';
+  static const _keyCustomLon = 'custom_lon';
+  static const _keyCustomElev = 'custom_elev';
+  static const _keyCustomTime = 'custom_time';
 
   late SharedPreferences _prefs;
 
@@ -87,5 +93,32 @@ class StorageService {
         'bgOpacity': bgOpacity,
         'use24Hour': use24Hour,
         'textColorIndex': textColorIndex,
+        'useIST': useIST,
       };
+
+  // Timezone
+  bool get useIST => _prefs.getBool(_keyUseIST) ?? true;
+  Future<void> setUseIST(bool value) =>
+      _prefs.setBool(_keyUseIST, value);
+
+  // Mock Settings
+  bool get useMockLocation => _prefs.getBool(_keyUseMockLocation) ?? false;
+  Future<void> setUseMockLocation(bool value) => _prefs.setBool(_keyUseMockLocation, value);
+
+  double get customLat => _prefs.getDouble(_keyCustomLat) ?? 0.0;
+  Future<void> setCustomLat(double value) => _prefs.setDouble(_keyCustomLat, value);
+
+  double get customLon => _prefs.getDouble(_keyCustomLon) ?? 0.0;
+  Future<void> setCustomLon(double value) => _prefs.setDouble(_keyCustomLon, value);
+
+  double get customElev => _prefs.getDouble(_keyCustomElev) ?? 42.0;
+  Future<void> setCustomElev(double value) => _prefs.setDouble(_keyCustomElev, value);
+
+  String? get customTime => _prefs.getString(_keyCustomTime);
+  Future<void> setCustomTime(String? value) {
+    if (value == null) {
+      return _prefs.remove(_keyCustomTime);
+    }
+    return _prefs.setString(_keyCustomTime, value);
+  }
 }

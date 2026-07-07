@@ -24,11 +24,16 @@ class Telemetry {
         timestamp: DateTime.now(),
       );
 
-  Map<String, String> toDisplayMap({bool use24Hour = false}) {
-    final dateStr = '${timestamp.day.toString().padLeft(2, '0')}-${timestamp.month.toString().padLeft(2, '0')}-${timestamp.year}';
+  Map<String, String> toDisplayMap({bool use24Hour = false, bool useIST = false}) {
+    DateTime displayTime = timestamp;
+    if (useIST) {
+      displayTime = timestamp.toUtc().add(const Duration(hours: 5, minutes: 30));
+    }
+    
+    final dateStr = '${displayTime.day.toString().padLeft(2, '0')}-${displayTime.month.toString().padLeft(2, '0')}-${displayTime.year}';
     final ts = use24Hour
-        ? '${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')}'
-        : _to12Hour(timestamp);
+        ? '${displayTime.hour.toString().padLeft(2, '0')}:${displayTime.minute.toString().padLeft(2, '0')}'
+        : _to12Hour(displayTime);
     final fullTs = '$dateStr $ts';
     return {
       'Lat': latitude.toStringAsFixed(6),

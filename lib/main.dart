@@ -8,6 +8,8 @@ import 'screens/screenshot_stamper_screen.dart';
 import 'screens/browser_test_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/ping_screen.dart';
+import 'screens/hidden_settings_screen.dart';
+import 'screens/map_picker_screen.dart';
 import 'zabbix/zabbix_dashboard_screen.dart';
 import 'overlay/overlay_entry.dart';
 
@@ -18,7 +20,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   storageService = StorageService();
   await storageService.init();
-  telemetryService = TelemetryService();
+  telemetryService = TelemetryService(storageService);
   runApp(const NetForgeApp());
 }
 
@@ -170,6 +172,13 @@ class NetForgeApp extends StatelessWidget {
             ),
         '/ping': (context) => const PingScreen(),
         '/zabbix': (context) => const ZabbixDashboardScreen(),
+        '/hidden_settings': (context) => HiddenSettingsScreen(
+              storageService: storageService,
+              telemetryService: telemetryService,
+            ),
+        '/map_picker': (context) => MapPickerScreen(
+              storageService: storageService,
+            ),
       },
     );
   }

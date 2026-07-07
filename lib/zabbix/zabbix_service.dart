@@ -116,12 +116,25 @@ class ZabbixService {
         final line = lines[i];
         if (line.trim().isEmpty) continue;
         
-        // Simple CSV split (matches text within quotes)
-        final matches = RegExp(r'"([^"]*)"').allMatches(line).toList();
-        if (matches.length >= 6) {
-          final severity = matches[0].group(1) ?? '';
-          final hostName = matches[4].group(1) ?? '';
-          final description = matches[5].group(1) ?? '';
+        final parts = <String>[];
+        bool inQuotes = false;
+        StringBuffer current = StringBuffer();
+        for (int j = 0; j < line.length; j++) {
+          if (line[j] == '"') {
+            inQuotes = !inQuotes;
+          } else if (line[j] == ',' && !inQuotes) {
+            parts.add(current.toString());
+            current.clear();
+          } else {
+            current.write(line[j]);
+          }
+        }
+        parts.add(current.toString());
+
+        if (parts.length >= 6) {
+          final severity = parts[0].trim();
+          final hostName = parts[4].trim();
+          final description = parts[5].trim();
           
           if (hostName.isNotEmpty) {
             problems.add(ZabbixProblem(

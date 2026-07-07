@@ -250,10 +250,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     canvas.drawImage(cameraImage, Offset.zero, Paint());
 
     // Draw HUD at bottom-left with some padding
-    final hudScale = size.width / (hudOverlay.width * 1.2);
+    final hudScale = (size.width * 0.45) / hudOverlay.width; // 45% of image width
     final hudMatrix = Matrix4.identity()
-      ..translate(size.width * 0.02,
-          size.height - (hudOverlay.height * hudScale) - size.height * 0.02)
+      ..translate(size.width * 0.03,
+          size.height - (hudOverlay.height * hudScale) - size.height * 0.03)
       ..scale(hudScale);
 
     canvas.save();
@@ -285,7 +285,8 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     final telemetry = widget.telemetryService.telemetry;
     final storage = widget.storageService;
     final use24 = storage.use24Hour;
-    final displayMap = telemetry.toDisplayMap(use24Hour: use24);
+    final useIST = storage.useIST;
+    final displayMap = telemetry.toDisplayMap(use24Hour: use24, useIST: useIST);
 
     return Scaffold(
       backgroundColor: const Color(0xFF080D14),
@@ -329,14 +330,10 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
                     ? (cameraRatio > 1 ? (1 / cameraRatio) : cameraRatio)
                     : (cameraRatio < 1 ? (1 / cameraRatio) : cameraRatio);
 
-                return SizedBox.expand(
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    child: SizedBox(
-                      width: 1000,
-                      height: 1000 / ratio,
-                      child: CameraPreview(_cameraController!),
-                    ),
+                return Center(
+                  child: AspectRatio(
+                    aspectRatio: ratio,
+                    child: CameraPreview(_cameraController!),
                   ),
                 );
               },

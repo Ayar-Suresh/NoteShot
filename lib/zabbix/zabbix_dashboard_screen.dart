@@ -56,16 +56,9 @@ class _ZabbixDashboardScreenState extends State<ZabbixDashboardScreen>
   }
 
   Future<void> _performAutoLogin() async {
-    final creds = _storage.getCredentials();
-    final success =
-        await _service.login(creds['username']!, creds['password']!);
-    if (success) {
-      _startPolling();
-    } else {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _showLoginDialog();
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _showLoginDialog();
+    });
   }
 
   void _startPolling() {

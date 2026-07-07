@@ -135,13 +135,18 @@ class _DashboardScreenState extends State<DashboardScreen>
               shaderCallback: (bounds) => const LinearGradient(
                 colors: [Color(0xFF00FFD1), Color(0xFF00B4D8)],
               ).createShader(bounds),
-              child: const Text(
-                'NETFORGE',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w800,
-                  letterSpacing: 3,
+              child: GestureDetector(
+                onLongPress: () {
+                  Navigator.pushNamed(context, '/hidden_settings').then((_) => setState(() {}));
+                },
+                child: const Text(
+                  'NETFORGE',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 3,
+                  ),
                 ),
               ),
             ),

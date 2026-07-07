@@ -55,13 +55,13 @@ class ZabbixStorage {
 
   Future<void> saveCredentials(String username, String password) async {
     await prefs.setString(_userKey, username);
-    await prefs.setString(_passKey, password);
+    // Password is no longer saved for security
   }
 
   Map<String, String> getCredentials() {
     return {
-      'username': prefs.getString(_userKey) ?? 'sipl-team',
-      'password': prefs.getString(_passKey) ?? 'sipl1234',
+      'username': prefs.getString(_userKey) ?? '',
+      'password': '',
     };
   }
 }

@@ -66,8 +66,8 @@ class _OverlayLaunchScreenState extends State<OverlayLaunchScreen>
 
     await FlutterOverlayWindow.showOverlay(
       enableDrag: true,
-      height: 280,
-      width: 350,
+      height: 400,
+      width: 800,
       alignment: OverlayAlignment.topLeft,
       positionGravity: PositionGravity.auto,
     );

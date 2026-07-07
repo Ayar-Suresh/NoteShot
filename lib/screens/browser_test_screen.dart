@@ -42,6 +42,44 @@ class _BrowserTestScreenState extends State<BrowserTestScreen>
     )..repeat();
 
     _initWebView();
+    _checkLocationPermission();
+  }
+
+  Future<void> _checkLocationPermission() async {
+    if (widget.storageService.useMockLocation) {
+      await widget.telemetryService.startTracking();
+      return;
+    }
+
+    final status = widget.telemetryService.status;
+    if (status == TelemetryStatus.denied || status == TelemetryStatus.serviceOff || status == TelemetryStatus.idle) {
+      await widget.telemetryService.startTracking();
+      if (widget.telemetryService.status == TelemetryStatus.denied || widget.telemetryService.status == TelemetryStatus.serviceOff) {
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              backgroundColor: const Color(0xFF0D1520),
+              title: const Text('Location Required', style: TextStyle(color: Color(0xFF00FFD1))),
+              content: const Text('Please enable location services for speed test stamping.', style: TextStyle(color: Colors.white)),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('CANCEL'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    widget.telemetryService.openLocationSettings();
+                    Navigator.pop(context);
+                  },
+                  child: const Text('OPEN SETTINGS'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _onUpdate() {

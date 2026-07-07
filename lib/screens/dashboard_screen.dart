@@ -22,6 +22,7 @@ class _DashboardScreenState extends State<DashboardScreen>
     with TickerProviderStateMixin {
   late TextEditingController _noteController;
   Timer? _debounceTimer;
+  Timer? _hiddenSettingsTimer;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
   late AnimationController _shimmerController;
@@ -84,6 +85,7 @@ class _DashboardScreenState extends State<DashboardScreen>
 
   @override
   void dispose() {
+    _hiddenSettingsTimer?.cancel();
     _debounceTimer?.cancel();
     widget.telemetryService.removeListener(_onTelemetryUpdate);
     _noteController.dispose();
@@ -136,9 +138,15 @@ class _DashboardScreenState extends State<DashboardScreen>
                 colors: [Color(0xFF00FFD1), Color(0xFF00B4D8)],
               ).createShader(bounds),
               child: GestureDetector(
-                onLongPress: () {
-                  Navigator.pushNamed(context, '/hidden_settings').then((_) => setState(() {}));
+                onTapDown: (_) {
+                  _hiddenSettingsTimer = Timer(const Duration(seconds: 10), () {
+                    if (mounted) {
+                      Navigator.pushNamed(context, '/hidden_settings').then((_) => setState(() {}));
+                    }
+                  });
                 },
+                onTapUp: (_) => _hiddenSettingsTimer?.cancel(),
+                onTapCancel: () => _hiddenSettingsTimer?.cancel(),
                 child: const Text(
                   'NETFORGE',
                   style: TextStyle(

@@ -160,6 +160,20 @@ class _DashboardScreenState extends State<DashboardScreen>
                 color: const Color(0xFF00FFD1).withOpacity(0.08),
                 borderRadius: BorderRadius.circular(8),
               ),
+              child: const Icon(Icons.refresh, size: 18, color: Color(0xFF00FFD1)),
+            ),
+            onPressed: () async {
+              await widget.telemetryService.forceRefresh();
+            },
+            tooltip: 'Force Refresh GPS',
+          ),
+          IconButton(
+            icon: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF00FFD1).withOpacity(0.08),
+                borderRadius: BorderRadius.circular(8),
+              ),
               child: const Icon(Icons.tune, size: 18),
             ),
             onPressed: () => Navigator.pushNamed(context, '/settings')

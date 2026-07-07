@@ -70,6 +70,64 @@ class _CameraCaptureScreenState extends State<CameraCaptureScreen>
     _flashAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(parent: _flashController, curve: Curves.easeOut),
     );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkGpsStatus();
+    });
+  }
+
+  Future<void> _checkGpsStatus() async {
+    final status = widget.telemetryService.status;
+    if (status == TelemetryStatus.idle || 
+        status == TelemetryStatus.serviceOff || 
+        status == TelemetryStatus.denied) {
+      await widget.telemetryService.startTracking();
+    }
+    
+    if (mounted && widget.telemetryService.status == TelemetryStatus.serviceOff) {
+      _showEnableGpsPrompt();
+    }
+  }
+
+  void _showEnableGpsPrompt() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        backgroundColor: const Color(0xFF0D1520),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+          side: BorderSide(color: const Color(0xFFFF4757).withOpacity(0.3)),
+        ),
+        title: Row(
+          children: [
+            const Icon(Icons.location_off, color: Color(0xFFFF4757)),
+            const SizedBox(width: 10),
+            const Text('GPS is Disabled', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: const Text(
+          'Realtime telemetry requires GPS to be enabled. Please turn on Location Services in your settings.',
+          style: TextStyle(color: Colors.white70),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('Ignore', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF00FFD1),
+              foregroundColor: const Color(0xFF080D14),
+            ),
+            onPressed: () {
+              Navigator.pop(context);
+              widget.telemetryService.openLocationSettings();
+            },
+            child: const Text('Open Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
   }
 
   void _onTelemetryUpdate() {
